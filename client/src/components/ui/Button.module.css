@@ -67,3 +67,12 @@
 .ghost-dark:hover {
   border-color: var(--color-on-dark);
 }
+
+.light {
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+.light:hover {
+  background: var(--color-bg);
+}

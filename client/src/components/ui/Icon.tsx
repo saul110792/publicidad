@@ -31,6 +31,67 @@ const paths = {
       <path d="M3.5 6.5 12 13l8.5-6.5" />
     </>
   ),
+  plus: <path d="M12 5v14M5 12h14" />,
+  chevronRight: <path d="m9 6 6 6-6 6" />,
+  search: (
+    <>
+      <circle cx="11" cy="11" r="7" />
+      <path d="m20 20-3.5-3.5" />
+    </>
+  ),
+  sliders: <path d="M4 6h16M7 12h10M10 18h4" />,
+  upload: <path d="M12 15V4M7 9l5-5 5 5M5 20h14" />,
+  eye: (
+    <>
+      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" />
+      <circle cx="12" cy="12" r="3" />
+    </>
+  ),
+  truck: (
+    <>
+      <path d="M3 6h11v10H3zM14 9h4l3 3v4h-7" />
+      <circle cx="7" cy="18" r="2" />
+      <circle cx="17" cy="18" r="2" />
+    </>
+  ),
+  pencil: (
+    <>
+      <path d="M4 20h4L19 9l-4-4L4 16v4z" />
+      <path d="m13.5 6.5 4 4" />
+    </>
+  ),
+  card: (
+    <>
+      <rect x="2.5" y="5" width="19" height="14" rx="2" />
+      <path d="M2.5 10h19M6 15h4" />
+    </>
+  ),
+  // Categorías
+  impresos: (
+    <>
+      <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
+      <path d="M14 3v5h5M9 13h6M9 17h4" />
+    </>
+  ),
+  granFormato: (
+    <>
+      <rect x="3" y="4" width="18" height="11" rx="1.5" />
+      <path d="M7 15v5M17 15v5M7 9.5h10" />
+    </>
+  ),
+  promocionales: <path d="M8 3 3.5 5.5 5 10l2-.8V21h10V9.2l2 .8 1.5-4.5L16 3a4 4 0 0 1-8 0z" />,
+  identidad: (
+    <>
+      <circle cx="12" cy="9" r="6" />
+      <path d="m8.5 14-1.5 7 5-3 5 3-1.5-7" />
+    </>
+  ),
+  digital: (
+    <>
+      <rect x="3" y="4" width="18" height="12" rx="2" />
+      <path d="M8 20h8M12 16v4" />
+    </>
+  ),
 } satisfies Record<string, ReactNode>;
 
 export type IconName = keyof typeof paths;

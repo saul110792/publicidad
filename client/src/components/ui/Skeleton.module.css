@@ -1,0 +1,25 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+  gap: var(--space-4);
+}
+
+.block {
+  border-radius: var(--radius-card);
+  background: linear-gradient(90deg, #ebe8e1 0%, #f3f1ec 50%, #ebe8e1 100%) 0 0 / 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.error {
+  padding: var(--space-4);
+  border: 1px solid var(--color-accent-soft);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  color: var(--color-accent-hover);
+}

@@ -23,17 +23,32 @@ shared/   Tipos y constantes compartidos (giros, estados de pedido, formato MXN)
 
 ## Correr en local
 
-Requisitos: Node 22+.
+Requisitos: Node 22+ y PostgreSQL 16+.
 
 ```bash
 npm install
-cp server/.env.example server/.env
+cp server/.env.example server/.env   # pon tu DATABASE_URL
 cp client/.env.example client/.env
+npm run db:create -w @publicidad/server    # crea la base si no existe
+npm run db:migrate -w @publicidad/server   # aplica migraciones
+npm run db:seed -w @publicidad/server      # carga el catálogo inicial
 npm run dev
 ```
 
 - Front: http://localhost:5173
 - API: http://localhost:3001/api/health (en desarrollo Vite hace proxy de `/api`)
+
+### Base de datos
+
+| Comando (en `server/`) | Qué hace                                                      |
+| ---------------------- | ------------------------------------------------------------- |
+| `npm run db:generate`  | Genera una migración nueva a partir de `src/db/schema.ts`     |
+| `npm run db:migrate`   | Aplica las migraciones pendientes                             |
+| `npm run db:seed`      | Borra y vuelve a cargar el catálogo (se niega si hay pedidos) |
+| `npm run db:studio`    | Abre Drizzle Studio para ver y editar datos                   |
+
+Los precios del seed están en `NULL` a propósito: la UI muestra `$[PRECIO]` hasta que el negocio
+capture los precios reales. Todo el dinero se guarda en centavos.
 
 ## Scripts
 
@@ -53,7 +68,7 @@ Ver `server/.env.example` y `client/.env.example`. Los archivos `.env` nunca se 
 ## Avance por fases
 
 - [x] 1. Setup: monorepo, lint, prettier, env, tokens de diseño y layout base
-- [ ] 2. Catálogo estático (Inicio, Catálogo, Paquetes) con seed en BD
+- [x] 2. Catálogo estático (Inicio, Catálogo, Paquetes) con seed en BD
 - [ ] 3. Cotizador y WhatsApp con `ref_code`
 - [ ] 4. Carrito, checkout y oferta de paquete
 - [ ] 5. Pagos

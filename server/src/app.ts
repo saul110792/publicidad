@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import { allowedOrigins } from './config/env';
 import { errorHandler, notFound } from './middleware/errors';
+import { catalogRouter } from './routes/catalog';
 
 export function createApp() {
   const app = express();
@@ -15,6 +16,8 @@ export function createApp() {
   app.get('/api/health', (_req, res) => {
     res.json({ ok: true });
   });
+
+  app.use('/api', catalogRouter);
 
   app.use('/api', notFound);
   app.use(errorHandler);

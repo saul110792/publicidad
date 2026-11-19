@@ -1,0 +1,136 @@
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition);
+}
+
+.card:hover {
+  border-color: var(--color-ink);
+  box-shadow: var(--shadow-card);
+}
+
+.card:focus-within {
+  box-shadow: var(--focus-ring);
+}
+
+.media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: var(--color-bg);
+}
+
+.media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.art {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: var(--color-accent);
+  background: var(--color-accent-soft);
+}
+
+.art[data-cat='gran-formato'] {
+  color: var(--color-on-dark);
+  background: var(--color-ink);
+}
+
+.art[data-cat='promocionales'] {
+  color: var(--color-ink);
+  background: #ece8df;
+}
+
+.art[data-cat='identidad-de-marca'] {
+  color: var(--color-accent-on-dark);
+  background: #2b2c32;
+}
+
+.art[data-cat='digital'] {
+  color: var(--color-success-text);
+  background: var(--color-success-bg);
+}
+
+.badge {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4);
+}
+
+.cat {
+  color: var(--color-text-3);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.name {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  line-height: 1.25;
+  letter-spacing: var(--tracking-tight);
+}
+
+/* Toda la tarjeta es clicable a través del link del título. */
+.link {
+  text-decoration: none;
+}
+
+.link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.link:focus-visible {
+  outline: none;
+}
+
+.price {
+  color: var(--color-text-2);
+  font-size: var(--text-sm);
+}
+
+.price strong {
+  color: var(--color-ink);
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: var(--space-1);
+  min-height: var(--tap);
+  margin-top: auto;
+  padding-top: var(--space-2);
+  color: var(--color-accent);
+  font-weight: var(--weight-bold);
+}
+
+.card:hover .cta {
+  color: var(--color-accent-hover);
+}
