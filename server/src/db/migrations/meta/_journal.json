@@ -22,6 +22,13 @@
       "when": 1795064235989,
       "tag": "0002_pedidos_por_confirmar",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1795065160434,
+      "tag": "0003_pagos",
+      "breakpoints": true
     }
   ]
 }

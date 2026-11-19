@@ -6,6 +6,7 @@ import { ProductPage } from './pages/ProductPage';
 import { PackagesPage } from './pages/PackagesPage';
 import { CheckoutPage } from './pages/CheckoutPage';
 import { OrderConfirmPage } from './pages/OrderConfirmPage';
+import { MockPaymentPage } from './pages/MockPaymentPage';
 import { InfoPage } from './pages/InfoPage';
 import { AdminPage } from './pages/AdminPage';
 import { NotFoundPage } from './pages/NotFoundPage';
@@ -21,6 +22,7 @@ export const router = createBrowserRouter([
       { path: '/paquetes', element: <PackagesPage /> },
       { path: '/checkout', element: <CheckoutPage /> },
       { path: '/pedido/:id', element: <OrderConfirmPage /> },
+      { path: '/pago-de-prueba/:folio', element: <MockPaymentPage /> },
       { path: '/faq', element: <InfoPage title="Preguntas frecuentes" /> },
       { path: '/preparar-archivo', element: <InfoPage title="Cómo preparar tu archivo" /> },
       { path: '/tiempos-de-entrega', element: <InfoPage title="Tiempos de entrega" /> },

@@ -4,6 +4,7 @@ import { PagePlaceholder } from '../components/PagePlaceholder';
 import { Button } from '../components/ui/Button';
 import { Icon } from '../components/ui/Icon';
 import { PackageOffer } from '../features/cart/PackageOffer';
+import { PaymentBanner } from '../features/payment/PaymentBanner';
 import { price } from '../lib/format';
 import { useApi } from '../lib/useApi';
 import { whatsappLink } from '../lib/whatsapp';
@@ -21,12 +22,14 @@ function paymentStep(o: OrderDTO): string {
   if (o.metodoPago === 'transferencia') {
     return 'Te mandamos los datos para la transferencia o SPEI por WhatsApp.';
   }
+  if (o.estadoPago === 'pagado') return 'Tu pago ya está registrado.';
+  if (o.pagoEnLinea) return 'Si aún no pagas, usa el botón "Pagar ahora".';
   return 'Te mandamos el enlace de pago con tarjeta por WhatsApp.';
 }
 
 export function OrderConfirmPage() {
   const { id = '' } = useParams();
-  const { data: order, error } = useApi<OrderDTO>(`/api/orders/${encodeURIComponent(id)}`);
+  const { data: order, error, reload } = useApi<OrderDTO>(`/api/orders/${encodeURIComponent(id)}`);
 
   if (error && !order) {
     return (
@@ -52,12 +55,16 @@ export function OrderConfirmPage() {
         <span className={styles.badge}>
           <Icon name="check" size={28} />
         </span>
-        <p className={styles.eyebrow}>Pedido recibido</p>
+        <p className={styles.eyebrow}>
+          {order.estadoPago === 'pagado' ? 'Pedido pagado' : 'Pedido recibido'}
+        </p>
         <h1 className={styles.h1}>Gracias, {order.nombre}</h1>
         <p className={styles.folio}>
           Tu número de pedido es <strong>{order.folio}</strong>
         </p>
       </header>
+
+      <PaymentBanner order={order} reload={reload} />
 
       <div className={styles.layout}>
         <section className={styles.card} aria-labelledby="steps-title">

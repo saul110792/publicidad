@@ -267,3 +267,31 @@ export const admins = pgTable('admins', {
   passwordHash: text('password_hash').notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
+
+/**
+ * Cada intento de pago reportado por el proveedor. Los webhooks pueden llegar repetidos o
+ * desordenados: se guarda por (proveedor, referencia) y el estado del pedido se deriva de aquí.
+ */
+export const payments = pgTable(
+  'payments',
+  {
+    id: serial('id').primaryKey(),
+    orderId: integer('order_id')
+      .notNull()
+      .references(() => orders.id, { onDelete: 'cascade' }),
+    provider: text('provider').notNull(),
+    /** Id del pago en el proveedor. */
+    providerRef: text('provider_ref').notNull(),
+    estado: paymentStatus('estado').notNull(),
+    /** Estado tal como lo manda el proveedor, ej. "approved", "rejected". */
+    estadoProveedor: text('estado_proveedor'),
+    monto: integer('monto').notNull(),
+    raw: jsonb('raw').notNull().default({}),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    uniqueIndex('payments_provider_ref_uq').on(t.provider, t.providerRef),
+    index('payments_order_idx').on(t.orderId),
+  ],
+);

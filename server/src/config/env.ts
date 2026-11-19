@@ -16,6 +16,16 @@ const schema = z.object({
   ),
   /** Costo del envío a domicilio en centavos. Sin él, el envío queda "por confirmar". */
   SHIPPING_COST: z.preprocess(emptyToUndefined, z.coerce.number().int().nonnegative().optional()),
+  /**
+   * Proveedor de pagos: "mercadopago" o "mock" (pago simulado, solo fuera de producción).
+   * Vacío = mercadopago si hay MP_ACCESS_TOKEN; si no, el pago con tarjeta se coordina por WhatsApp.
+   */
+  PAYMENT_PROVIDER: z.preprocess(emptyToUndefined, z.enum(['mercadopago', 'mock']).optional()),
+  MP_ACCESS_TOKEN: z.preprocess(emptyToUndefined, z.string().optional()),
+  /** "Clave secreta" de las notificaciones (webhooks) en el panel de Mercado Pago. */
+  MP_WEBHOOK_SECRET: z.preprocess(emptyToUndefined, z.string().optional()),
+  /** URL pública https de la API, para que Mercado Pago mande los webhooks. */
+  API_PUBLIC_URL: z.preprocess(emptyToUndefined, z.url().optional()),
 });
 
 function emptyToUndefined(v: unknown) {
@@ -37,3 +47,6 @@ if (!parsed.success) {
 export const env = parsed.data;
 
 export const allowedOrigins = env.CLIENT_URL.split(',').map((o) => o.trim());
+
+/** URL pública del front (la primera de CLIENT_URL): de aquí salen las URLs de regreso del pago. */
+export const clientUrl = allowedOrigins[0]!.replace(/\/$/, '');

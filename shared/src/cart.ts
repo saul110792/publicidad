@@ -97,7 +97,15 @@ export type OrderRequest = {
   utm?: { source?: string; medium?: string; campaign?: string };
 };
 
-export type OrderCreatedDTO = { folio: string };
+export type OrderCreatedDTO = {
+  folio: string;
+  /** Si paga con tarjeta y hay total: a dónde mandar al cliente para pagar. */
+  pagoUrl: string | null;
+};
+
+export type PaymentState = 'pendiente' | 'pagado' | 'fallido' | 'reembolsado';
+export type PaymentStartDTO = { redirectUrl: string };
+export type PaymentStatusDTO = { estadoPago: PaymentState };
 
 export type OrderDTO = {
   folio: string;
@@ -113,7 +121,9 @@ export type OrderDTO = {
   metodoPago: PaymentMethod;
   entrega: DeliveryMethod;
   estado: string;
-  estadoPago: string;
+  estadoPago: PaymentState;
+  /** true si se puede pagar en línea ahora (tarjeta, con total y sin pagar). */
+  pagoEnLinea: boolean;
   packageUpgrade: boolean;
   /** Oferta después de la compra: paquete que completa lo que compró. */
   oferta: PackageOfferDTO | null;

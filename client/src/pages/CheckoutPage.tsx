@@ -49,7 +49,11 @@ export function CheckoutPage() {
   const { data, error, loading } = useCartQuote(state);
   const navigate = useNavigate();
   const [form, setForm] = useState<Form>(INITIAL);
-  const [submit, setSubmit] = useState<{ sending?: boolean; error?: string }>({});
+  const [submit, setSubmit] = useState<{
+    sending?: boolean;
+    redirecting?: boolean;
+    error?: string;
+  }>({});
 
   const field =
     <K extends keyof Form>(key: K) =>
@@ -85,6 +89,12 @@ export function CheckoutPage() {
     try {
       const res = await apiPost<OrderCreatedDTO>('/api/orders', body);
       cart.clear();
+      if (res.pagoUrl) {
+        // Tarjeta: al checkout del proveedor. Regresa a /pedido/:folio con el resultado.
+        setSubmit({ sending: true, redirecting: true });
+        window.location.assign(res.pagoUrl);
+        return;
+      }
       navigate(`/pedido/${res.folio}`);
     } catch (err) {
       setSubmit({
@@ -96,6 +106,14 @@ export function CheckoutPage() {
               : 'No pudimos confirmar tu pedido. Intenta de nuevo.',
       });
     }
+  }
+
+  if (submit.redirecting) {
+    return (
+      <div className={`container ${styles.page}`} role="status">
+        Te llevamos a pagar…
+      </div>
+    );
   }
 
   if (empty) {
@@ -368,7 +386,11 @@ export function CheckoutPage() {
             block
             disabled={submit.sending || (loading && !data)}
           >
-            {submit.sending ? 'Confirmando…' : 'Confirmar y pagar'}
+            {submit.redirecting
+              ? 'Te llevamos a pagar…'
+              : submit.sending
+                ? 'Confirmando…'
+                : 'Confirmar y pagar'}
           </Button>
           {submit.error && (
             <p className={styles.error} role="alert">

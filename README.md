@@ -65,11 +65,15 @@ capture los precios reales. Todo el dinero se guarda en centavos.
 
 Ver `server/.env.example` y `client/.env.example`. Los archivos `.env` nunca se suben al repositorio.
 
-| Variable (server) | Para qué                      | Si está vacía                            |
-| ----------------- | ----------------------------- | ---------------------------------------- |
-| `DATABASE_URL`    | PostgreSQL                    | La API no puede consultar la BD          |
-| `SHIPPING_COST`   | Envío a domicilio en centavos | El envío sale "Por confirmar"            |
-| `CLOUDINARY_URL`  | Subida de archivos de diseño  | El cliente manda su archivo por WhatsApp |
+| Variable (server)   | Para qué                                                | Si está vacía                                           |
+| ------------------- | ------------------------------------------------------- | ------------------------------------------------------- |
+| `DATABASE_URL`      | PostgreSQL                                              | La API no puede consultar la BD                         |
+| `SHIPPING_COST`     | Envío a domicilio en centavos                           | El envío sale "Por confirmar"                           |
+| `CLOUDINARY_URL`    | Subida de archivos de diseño                            | El cliente manda su archivo por WhatsApp                |
+| `PAYMENT_PROVIDER`  | `mercadopago` o `mock` (pago simulado, solo desarrollo) | Mercado Pago si hay token                               |
+| `MP_ACCESS_TOKEN`   | Cobro con tarjeta (Mercado Pago)                        | El pago con tarjeta se coordina por WhatsApp            |
+| `MP_WEBHOOK_SECRET` | Validar la firma de los webhooks                        | Los webhooks se aceptan sin firma (aviso en producción) |
+| `API_PUBLIC_URL`    | URL https de la API para recibir webhooks               | Solo se confirma al regresar el cliente                 |
 
 Para Cloudinary: crea una cuenta, copia el "API environment variable" del dashboard
 (`cloudinary://API_KEY:API_SECRET@CLOUD_NAME`) y pégalo en `CLOUDINARY_URL`. El navegador sube
@@ -83,7 +87,7 @@ Cloudinary puede permitir menos por archivo.
 - [x] 2. Catálogo estático (Inicio, Catálogo, Paquetes) con seed en BD
 - [x] 3. Cotizador y WhatsApp con `ref_code`
 - [x] 4. Carrito, checkout y oferta de paquete
-- [ ] 5. Pagos
+- [x] 5. Pagos
 - [ ] 6. Medición
 - [ ] 7. Admin y dashboard
 - [ ] 8. Deploy en Render
@@ -119,3 +123,28 @@ Cada clic en "Cotizar por WhatsApp" crea un `lead` con un código como `TJ-4F2A`
   se confirma por WhatsApp. El pago en tienda muestra el 50% de anticipo.
 - La confirmación `/pedido/:folio` usa un folio aleatorio (`P-7KQ2MX`) y solo muestra el primer
   nombre del cliente. Si compró piezas sueltas que encajan en un paquete, ofrece completarlo.
+
+## Pagos
+
+El back solo habla con la interfaz `PaymentProvider` (`server/src/payments/types.ts`). Hoy hay dos
+implementaciones: Mercado Pago Checkout Pro (`mercadopago.ts`) y un pago simulado (`mock.ts`).
+Para cambiar a Stripe se escribe otra clase con los mismos tres métodos.
+
+1. Si el cliente elige **tarjeta** y el pedido tiene total, al confirmar se crea el checkout y se le
+   manda a pagar. Si algún precio está por confirmar, el pedido se guarda y el cobro se coordina por
+   WhatsApp.
+2. Al regresar a `/pedido/:folio`, el back consulta el pago a Mercado Pago con el `payment_id` (nunca
+   confía en lo que diga la URL). El **webhook** (`POST /api/payments/webhook/mercadopago`) hace lo
+   mismo y valida la firma `x-signature` con `MP_WEBHOOK_SECRET`.
+3. Cada intento se guarda en `payments` (idempotente por proveedor + id). El pedido queda `pagado`
+   solo con un pago aprobado por el total completo; un rechazo posterior no lo revierte.
+4. Si el pago falla, la confirmación ofrece "Pagar ahora" para reintentar.
+
+Transferencia/SPEI y pago en tienda se registran a mano (el panel de admin llega en la Fase 7).
+
+**Probar en local sin credenciales:** pon `PAYMENT_PROVIDER=mock` en `server/.env`. "Confirmar y
+pagar" lleva a `/pago-de-prueba/:folio`, donde apruebas o rechazas el pago. En producción se ignora.
+
+**Probar con Mercado Pago:** usa el access token de prueba y las tarjetas de prueba de su
+documentación. En local los webhooks no llegan (no hay URL pública), pero el pago se confirma al
+regresar del checkout.

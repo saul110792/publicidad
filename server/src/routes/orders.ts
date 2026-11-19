@@ -18,6 +18,7 @@ import { customers, orderItems, orders, products } from '../db/schema';
 import { HttpError } from '../middleware/errors';
 import { buildOffer, priceLines, quoteCart, shippingCost } from '../services/cart';
 import { FOLIO_PATTERN, generateFolio } from '../services/folio';
+import { canPayOnline, startCheckout } from '../services/payments';
 import { isUniqueViolation } from '../services/refCode';
 import { cloudinary, uploadSignature } from '../services/uploads';
 import { parse, selectionSchema, slugSchema, utmSchema } from '../services/validation';
@@ -213,7 +214,18 @@ ordersRouter.post('/orders', async (req, res) => {
     throw new HttpError(503, 'No pudimos generar el folio, intenta de nuevo.');
   });
 
-  const body: OrderCreatedDTO = { folio };
+  // Con tarjeta y total definido se crea el checkout. Si falla, el pedido ya existe y la
+  // confirmación ofrece "Pagar ahora" para reintentar.
+  let pagoUrl: string | null = null;
+  if (canPayOnline({ metodoPago: input.metodoPago, total, estadoPago: 'pendiente' })) {
+    try {
+      pagoUrl = await startCheckout(folio);
+    } catch (err) {
+      console.error(`No se pudo crear el pago de ${folio}:`, err);
+    }
+  }
+
+  const body: OrderCreatedDTO = { folio, pagoUrl };
   res.status(201).json(body);
 });
 
@@ -280,6 +292,7 @@ ordersRouter.get('/orders/:folio', async (req, res) => {
     entrega: o.entrega,
     estado: o.estado,
     estadoPago: o.estadoPago,
+    pagoEnLinea: canPayOnline(o),
     packageUpgrade: o.packageUpgrade,
     oferta,
   };
