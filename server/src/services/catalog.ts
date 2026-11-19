@@ -46,19 +46,3 @@ export function precioDesde(precioBase: Centavos | null, cantidadMinima: number 
   if (precioBase == null) return null;
   return precioBase * (cantidadMinima ?? 1);
 }
-
-/**
- * Lo que costarían los componentes de un paquete comprados por separado.
- * Si a cualquier componente le falta precio, devuelve NULL (la UI muestra el placeholder).
- * En la Fase 3 se reemplaza por el cotizador real (escalas por cantidad y opciones).
- */
-export function precioSeparado(
-  items: { precioBase: Centavos | null; cantidad: number | null; cantidadMinima: number | null }[],
-): Centavos | null {
-  let total = 0;
-  for (const it of items) {
-    if (it.precioBase == null) return null;
-    total += it.precioBase * (it.cantidad ?? it.cantidadMinima ?? 1);
-  }
-  return items.length ? total : null;
-}

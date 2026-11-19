@@ -15,6 +15,13 @@
       "when": 1795057874766,
       "tag": "0001_opciones_y_ref",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795064235989,
+      "tag": "0002_pedidos_por_confirmar",
+      "breakpoints": true
     }
   ]
 }

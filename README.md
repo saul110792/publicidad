@@ -65,12 +65,24 @@ capture los precios reales. Todo el dinero se guarda en centavos.
 
 Ver `server/.env.example` y `client/.env.example`. Los archivos `.env` nunca se suben al repositorio.
 
+| Variable (server) | Para qué                      | Si está vacía                            |
+| ----------------- | ----------------------------- | ---------------------------------------- |
+| `DATABASE_URL`    | PostgreSQL                    | La API no puede consultar la BD          |
+| `SHIPPING_COST`   | Envío a domicilio en centavos | El envío sale "Por confirmar"            |
+| `CLOUDINARY_URL`  | Subida de archivos de diseño  | El cliente manda su archivo por WhatsApp |
+
+Para Cloudinary: crea una cuenta, copia el "API environment variable" del dashboard
+(`cloudinary://API_KEY:API_SECRET@CLOUD_NAME`) y pégalo en `CLOUDINARY_URL`. El navegador sube
+el archivo directo a Cloudinary con una firma que genera la API; el secreto nunca llega al front.
+Revisa el límite de tamaño de tu plan: el sitio acepta hasta 50 MB, pero el plan gratuito de
+Cloudinary puede permitir menos por archivo.
+
 ## Avance por fases
 
 - [x] 1. Setup: monorepo, lint, prettier, env, tokens de diseño y layout base
 - [x] 2. Catálogo estático (Inicio, Catálogo, Paquetes) con seed en BD
 - [x] 3. Cotizador y WhatsApp con `ref_code`
-- [ ] 4. Carrito, checkout y oferta de paquete
+- [x] 4. Carrito, checkout y oferta de paquete
 - [ ] 5. Pagos
 - [ ] 6. Medición
 - [ ] 7. Admin y dashboard
@@ -90,3 +102,20 @@ El cálculo vive solo en el back (`server/src/services/pricing.ts`); el front mu
 4. Si falta cualquier precio (base u opción elegida), el total es `null` y la UI muestra `$[PRECIO]`.
 
 Cada clic en "Cotizar por WhatsApp" crea un `lead` con un código como `TJ-4F2A`, que va dentro del mensaje.
+
+## Carrito y oferta de paquete
+
+- El carrito vive en `localStorage` y solo guarda slugs, opciones y archivos subidos.
+  `POST /api/cart` devuelve nombres, precios y la oferta; `POST /api/orders` vuelve a calcular todo
+  antes de guardar.
+- **Oferta** (`server/src/services/packageMatch.ts`): cada línea suelta del carrito cubre un componente
+  de paquete. Si un paquete queda cubierto en 2 o más componentes, se ofrece el que cubre más; a
+  igual cobertura, el más cercano a completarse, luego el recomendado y luego el orden del catálogo.
+  No se ofrecen paquetes que ya van en el carrito ni los rechazados con "No, gracias".
+- **Cambiar a paquete** reemplaza esas líneas por el paquete. Se conservan las opciones del cliente
+  (papel, acabado, diseño, archivo), pero la cantidad y lo que fija el paquete (ej. "Lona 2×1 m") lo
+  define el paquete. "Deshacer" regresa el carrito como estaba.
+- Si falta algún precio, el pedido se guarda con total `NULL` y la confirmación dice que el precio
+  se confirma por WhatsApp. El pago en tienda muestra el 50% de anticipo.
+- La confirmación `/pedido/:folio` usa un folio aleatorio (`P-7KQ2MX`) y solo muestra el primer
+  nombre del cliente. Si compró piezas sueltas que encajan en un paquete, ofrece completarlo.

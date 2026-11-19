@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import {
-  escapeLike,
-  precioDesde,
-  precioSeparado,
-  productQuerySchema,
-} from '../src/services/catalog';
+import { sumOrNull } from '@publicidad/shared';
+import { escapeLike, precioDesde, productQuerySchema } from '../src/services/catalog';
 
 describe('productQuerySchema', () => {
   it('usa valores por defecto sin params', () => {
@@ -52,27 +48,12 @@ describe('precioDesde', () => {
   });
 });
 
-describe('precioSeparado', () => {
-  it('suma precio × cantidad, usando la mínima si el componente no trae cantidad', () => {
-    expect(
-      precioSeparado([
-        { precioBase: 100, cantidad: 500, cantidadMinima: 100 },
-        { precioBase: 2000, cantidad: null, cantidadMinima: 2 },
-        { precioBase: 5000, cantidad: null, cantidadMinima: null },
-      ]),
-    ).toBe(50000 + 4000 + 5000);
+describe('sumOrNull', () => {
+  it('suma los valores', () => {
+    expect(sumOrNull([50000, 4000, 5000])).toBe(59000);
   });
 
-  it('es NULL si algún componente no tiene precio', () => {
-    expect(
-      precioSeparado([
-        { precioBase: 100, cantidad: 1, cantidadMinima: null },
-        { precioBase: null, cantidad: 1, cantidadMinima: null },
-      ]),
-    ).toBeNull();
-  });
-
-  it('es NULL para un paquete sin componentes', () => {
-    expect(precioSeparado([])).toBeNull();
+  it('es NULL si algún valor no tiene precio', () => {
+    expect(sumOrNull([100, null])).toBeNull();
   });
 });

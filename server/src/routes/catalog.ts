@@ -8,14 +8,14 @@ import type {
   ServiceDTO,
 } from '@publicidad/shared';
 import { db } from '../db/client';
-import { categories, packageItems, packages, products, recurringServices } from '../db/schema';
+import { categories, packages, products, recurringServices } from '../db/schema';
 import {
   escapeLike,
   precioDesde,
-  precioSeparado,
   productQuerySchema,
   type ProductQuery,
 } from '../services/catalog';
+import { loadPackages, toPackageDTOs } from '../services/catalogData';
 
 export const catalogRouter = Router();
 
@@ -125,52 +125,11 @@ async function getProducts(q: ProductQuery, limit = 200): Promise<ProductCardDTO
 
 export async function getPackages(
   opts: { giro?: string; soloDestacados?: boolean; ids?: number[] } = {},
-) {
-  const conds: SQL[] = [eq(packages.activo, true)];
+): Promise<PackageDTO[]> {
+  const conds: SQL[] = [];
   if (opts.giro) conds.push(or(eq(packages.giro, opts.giro), isNull(packages.giro))!);
   if (opts.soloDestacados) conds.push(eq(packages.destacado, true));
-  if (opts.ids) conds.push(inArray(packages.id, opts.ids.length ? opts.ids : [-1]));
-
-  const pkgs = await db
-    .select()
-    .from(packages)
-    .where(and(...conds))
-    .orderBy(asc(packages.orden));
-  if (!pkgs.length) return [];
-
-  const items = await db
-    .select({
-      packageId: packageItems.packageId,
-      etiqueta: packageItems.etiqueta,
-      cantidad: packageItems.cantidad,
-      productSlug: products.slug,
-      precioBase: products.precioBase,
-      cantidadMinima: products.cantidadMinima,
-    })
-    .from(packageItems)
-    .innerJoin(products, eq(products.id, packageItems.productId))
-    .where(
-      inArray(
-        packageItems.packageId,
-        pkgs.map((p) => p.id),
-      ),
-    )
-    .orderBy(asc(packageItems.orden));
-
-  return pkgs.map<PackageDTO>((p) => {
-    const own = items.filter((i) => i.packageId === p.id);
-    return {
-      slug: p.slug,
-      nombre: p.nombre,
-      giro: p.giro,
-      descripcion: p.descripcion,
-      precio: p.precio,
-      precioSeparado: precioSeparado(own),
-      destacado: p.destacado,
-      recomendado: p.recomendado,
-      items: own.map((i) => ({ etiqueta: i.etiqueta, productSlug: i.productSlug })),
-    };
-  });
+  return toPackageDTOs(await loadPackages({ conds, ids: opts.ids }));
 }
 
 // --- Rutas ---

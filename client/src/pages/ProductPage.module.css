@@ -228,16 +228,36 @@
   margin-top: var(--space-5);
 }
 
-.ctas [aria-disabled='true'] {
-  opacity: 0.55;
-  cursor: not-allowed;
+.added {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
 }
 
-.soon {
-  margin-top: calc(var(--space-2) * -1);
-  color: var(--color-text-3);
-  font-size: var(--text-xs);
-  text-align: center;
+.addedTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: var(--weight-semibold);
+}
+
+.addedNote {
+  color: var(--color-text-2);
+  font-size: var(--text-sm);
+}
+
+.addedActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.addedActions > * {
+  flex: 1 1 140px;
 }
 
 .ref {

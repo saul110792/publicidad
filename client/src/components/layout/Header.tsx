@@ -3,11 +3,12 @@ import { Link, NavLink } from 'react-router';
 import { mainNav, site } from '../../config/site';
 import { Button } from '../ui/Button';
 import { Icon } from '../ui/Icon';
+import { useCart } from '../../features/cart/cartStore';
 import styles from './Header.module.css';
 
 export function Header() {
   const [open, setOpen] = useState(false);
-  const cartCount: number = 0; // Se conecta al carrito en la Fase 4.
+  const cartCount = useCart().lineas.length;
   const close = () => setOpen(false);
 
   useEffect(() => {

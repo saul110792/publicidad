@@ -1,6 +1,7 @@
 import type { PackageDTO } from '@publicidad/shared';
 import { giroLabel, price } from '../../lib/format';
-import { whatsappLink } from '../../lib/whatsapp';
+import { useNavigate } from 'react-router';
+import { cart } from '../../features/cart/cartStore';
 import { Button } from '../ui/Button';
 import { Icon } from '../ui/Icon';
 import styles from './PackageCard.module.css';
@@ -13,6 +14,7 @@ type Props = {
 
 export function PackageCard({ pkg, tone = 'light', headingLevel = 'h3' }: Props) {
   const Heading = headingLevel;
+  const navigate = useNavigate();
   const ahorro =
     pkg.precio != null && pkg.precioSeparado != null && pkg.precioSeparado > pkg.precio
       ? pkg.precioSeparado - pkg.precio
@@ -49,9 +51,11 @@ export function PackageCard({ pkg, tone = 'light', headingLevel = 'h3' }: Props)
         {ahorro != null && <p className={styles.saving}>Ahorras {price(ahorro)}</p>}
       </div>
 
-      {/* En la Fase 4 este botón agrega el paquete al carrito. */}
       <Button
-        href={whatsappLink(`Hola, me interesa el Paquete ${pkg.nombre}.`)}
+        onClick={() => {
+          cart.addPackage(pkg.slug);
+          navigate('/checkout');
+        }}
         variant={tone === 'dark' ? 'primary' : pkg.recomendado ? 'primary' : 'dark'}
         block
       >

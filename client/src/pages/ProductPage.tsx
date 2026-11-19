@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router';
-import type { LeadDTO, ProductDetailDTO, Selection } from '@publicidad/shared';
+import type { CartFile, LeadDTO, ProductDetailDTO, Selection } from '@publicidad/shared';
 import { Button } from '../components/ui/Button';
 import { Icon } from '../components/ui/Icon';
 import { LoadError } from '../components/ui/Skeleton';
 import { PagePlaceholder } from '../components/PagePlaceholder';
 import { site } from '../config/site';
+import { cart } from '../features/cart/cartStore';
+import { uploadDesign } from '../features/cart/upload';
 import { DesignFile } from '../features/quote/DesignFile';
 import { OptionGroup } from '../features/quote/OptionGroup';
 import { ProductGallery } from '../features/quote/ProductGallery';
@@ -42,6 +44,11 @@ export function ProductPage() {
 function ProductView({ product }: { product: ProductDetailDTO }) {
   const [userSel, setUserSel] = useState<Selection>({});
   const [file, setFile] = useState<File | null>(null);
+  const [adding, setAdding] = useState<{
+    state: 'idle' | 'uploading' | 'done';
+    pct?: number;
+    note?: string;
+  }>({ state: 'idle' });
   const [lead, setLead] = useState<{ refCode?: string; error?: string; sending?: boolean }>({});
 
   // Selección efectiva: lo que eligió el cliente sobre las opciones por defecto.
@@ -60,6 +67,24 @@ function ProductView({ product }: { product: ProductDetailDTO }) {
   );
   // Convención del seed: la primera opción del grupo de diseño es "Ya tengo mi diseño".
   const hasOwnDesign = designGroup ? designOption?.id === designGroup.opciones[0]?.id : false;
+
+  async function addToCart() {
+    let archivo: CartFile | null = null;
+    let note: string | undefined;
+    if (hasOwnDesign && file) {
+      setAdding({ state: 'uploading', pct: 0 });
+      try {
+        archivo = await uploadDesign(file, (pct) => setAdding({ state: 'uploading', pct }));
+      } catch (err) {
+        note =
+          err instanceof ApiError && err.status === 503
+            ? 'Tu archivo no se guardó aquí: mándalo por WhatsApp cuando confirmes el pedido.'
+            : 'No pudimos subir tu archivo. Mándalo por WhatsApp cuando confirmes el pedido.';
+      }
+    }
+    cart.addProduct(product.slug, selection, archivo);
+    setAdding({ state: 'done', note });
+  }
 
   async function cotizarWhatsApp() {
     // La ventana se abre en el clic (síncrono) para que el navegador no la bloquee.
@@ -194,20 +219,29 @@ function ProductView({ product }: { product: ProductDetailDTO }) {
             {quoteError && <LoadError message={quoteError} />}
 
             <div className={styles.ctas}>
-              {/* El carrito se conecta en la Fase 4. */}
-              <Button
-                block
-                size="lg"
-                aria-disabled="true"
-                aria-describedby="cart-soon"
-                onClick={(e) => e.preventDefault()}
-              >
+              <Button block size="lg" onClick={addToCart} disabled={adding.state === 'uploading'}>
                 <Icon name="cart" size={20} />
-                Agregar al carrito
+                {adding.state === 'uploading'
+                  ? `Subiendo archivo… ${adding.pct ?? 0}%`
+                  : 'Agregar al carrito'}
               </Button>
-              <p id="cart-soon" className={styles.soon}>
-                El carrito se activa en la siguiente fase.
-              </p>
+              {adding.state === 'done' && (
+                <div className={styles.added} role="status">
+                  <p className={styles.addedTitle}>
+                    <Icon name="check" size={20} />
+                    Agregado al carrito
+                  </p>
+                  {adding.note && <p className={styles.addedNote}>{adding.note}</p>}
+                  <div className={styles.addedActions}>
+                    <Button to="/checkout" variant="dark">
+                      Ver carrito
+                    </Button>
+                    <Button to="/productos" variant="secondary">
+                      Seguir comprando
+                    </Button>
+                  </div>
+                </div>
+              )}
               <Button
                 block
                 size="lg"

@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import { allowedOrigins } from './config/env';
 import { errorHandler, notFound } from './middleware/errors';
 import { catalogRouter } from './routes/catalog';
+import { ordersRouter } from './routes/orders';
 import { quoteRouter } from './routes/quote';
 
 export function createApp() {
@@ -20,6 +21,7 @@ export function createApp() {
 
   app.use('/api', catalogRouter);
   app.use('/api', quoteRouter);
+  app.use('/api', ordersRouter);
 
   app.use('/api', notFound);
   app.use(errorHandler);

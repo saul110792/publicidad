@@ -183,10 +183,12 @@ export const orders = pgTable(
     customerId: integer('customer_id')
       .notNull()
       .references(() => customers.id),
-    subtotal: integer('subtotal').notNull(),
+    /** NULL = algún precio está por confirmar; el negocio lo cotiza por WhatsApp. */
+    subtotal: integer('subtotal'),
     descuento: integer('descuento').notNull().default(0),
-    envio: integer('envio').notNull().default(0),
-    total: integer('total').notNull(),
+    /** NULL = envío a domicilio sin costo definido todavía. */
+    envio: integer('envio'),
+    total: integer('total'),
     estado: orderStatus('estado').notNull().default('nuevo'),
     estadoPago: paymentStatus('estado_pago').notNull().default('pendiente'),
     metodoPago: paymentMethod('metodo_pago').notNull(),
@@ -221,8 +223,8 @@ export const orderItems = pgTable(
     packageId: integer('package_id').references(() => packages.id),
     opciones: jsonb('opciones').notNull().default({}),
     cantidad: integer('cantidad').notNull(),
-    precioUnitario: integer('precio_unitario').notNull(),
-    total: integer('total').notNull(),
+    precioUnitario: integer('precio_unitario'),
+    total: integer('total'),
     archivoUrl: text('archivo_url'),
   },
   (t) => [
