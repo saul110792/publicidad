@@ -10,6 +10,7 @@ import { iconForCategory } from '../config/categoryIcons';
 import { useApi } from '../lib/useApi';
 import { whatsappLink } from '../lib/whatsapp';
 import styles from './HomePage.module.css';
+import { usePageMeta } from '../lib/usePageMeta';
 
 const trustPoints: { icon: IconName; text: string }[] = [
   { icon: 'eye', text: 'Prueba digital antes de imprimir' },
@@ -28,6 +29,7 @@ const steps = [
 ];
 
 export function HomePage() {
+  usePageMeta(null);
   const { data, error, loading } = useApi<HomeDTO>('/api/home');
 
   return (

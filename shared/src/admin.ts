@@ -184,7 +184,12 @@ export type AdminLeadRow = {
 export type MetricsDTO = {
   desde: string;
   hasta: string;
-  ventas: { pedidos: number; total: Centavos; ticketPromedio: Centavos | null; porConfirmar: number };
+  ventas: {
+    pedidos: number;
+    total: Centavos;
+    ticketPromedio: Centavos | null;
+    porConfirmar: number;
+  };
   porCanal: { canal: string; pedidos: number; total: Centavos }[];
   porComoNosConocio: { origen: string; pedidos: number; total: Centavos }[];
   /** Sesiones únicas que llegaron a cada paso. */

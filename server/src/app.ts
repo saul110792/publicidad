@@ -1,9 +1,20 @@
 import express from 'express';
+import compression from 'compression';
+import { sql } from 'drizzle-orm';
 import cors from 'cors';
 import helmet from 'helmet';
 import { allowedOrigins, serveClient as shouldServeClient } from './config/env';
 import { findClientDist, serveClient } from './middleware/client';
 import { errorHandler, notFound } from './middleware/errors';
+import {
+  apiLimiter,
+  eventsLimiter,
+  leadsLimiter,
+  ordersLimiter,
+  quoteLimiter,
+  uploadsLimiter,
+} from './middleware/rateLimit';
+import { db } from './db/client';
 import { catalogRouter } from './routes/catalog';
 import { ordersRouter } from './routes/orders';
 import { paymentsRouter } from './routes/payments';
@@ -17,12 +28,28 @@ export function createApp() {
   app.set('trust proxy', 1); // Render corre detrás de un proxy
   // same-origin-allow-popups: "Cotizar por WhatsApp" abre una ventana y luego le pone la URL.
   app.use(helmet({ crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' } }));
+  app.use(compression());
   app.use(cors({ origin: allowedOrigins, credentials: true }));
   app.use(express.json({ limit: '1mb' }));
 
-  app.get('/api/health', (_req, res) => {
-    res.json({ ok: true });
+  // Render usa este endpoint para saber si el deploy nuevo puede recibir tráfico: revisa la BD.
+  app.get('/api/health', async (_req, res) => {
+    try {
+      await db.execute(sql`select 1`);
+      res.json({ ok: true });
+    } catch {
+      res.status(503).json({ ok: false, error: 'Sin conexión a la base de datos' });
+    }
   });
+
+  // Límites por IP (ver middleware/rateLimit.ts).
+  app.use('/api', apiLimiter);
+  app.post('/api/leads', leadsLimiter);
+  app.post('/api/orders', ordersLimiter);
+  app.post('/api/orders/:folio/pago', ordersLimiter);
+  app.post('/api/uploads/firma', uploadsLimiter);
+  app.post(['/api/quote', '/api/cart'], quoteLimiter);
+  app.post('/api/events', eventsLimiter);
 
   app.use('/api', catalogRouter);
   app.use('/api', quoteRouter);

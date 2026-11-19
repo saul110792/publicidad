@@ -8,10 +8,15 @@ import { price } from '../lib/format';
 import { useApi } from '../lib/useApi';
 import { whatsappLink } from '../lib/whatsapp';
 import styles from './PackagesPage.module.css';
+import { usePageMeta } from '../lib/usePageMeta';
 
 const CHIPS = [{ value: '', label: 'Todos' }, ...GIROS];
 
 export function PackagesPage() {
+  usePageMeta(
+    'Paquetes por giro',
+    'Paquetes de publicidad e impresión por tipo de negocio, más baratos que comprar cada pieza por separado.',
+  );
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const giro = params.get('giro') ?? '';

@@ -11,6 +11,7 @@ import { price } from '../lib/format';
 import { useApi } from '../lib/useApi';
 import { whatsappLink } from '../lib/whatsapp';
 import styles from './OrderConfirmPage.module.css';
+import { usePageMeta } from '../lib/usePageMeta';
 
 const label = <T extends readonly { value: string; label: string }[]>(list: T, v: string) =>
   list.find((x) => x.value === v)?.label ?? v;
@@ -30,6 +31,7 @@ function paymentStep(o: OrderDTO): string {
 }
 
 export function OrderConfirmPage() {
+  usePageMeta('Tu pedido');
   const { id = '' } = useParams();
   const { data: order, error, reload } = useApi<OrderDTO>(`/api/orders/${encodeURIComponent(id)}`);
 

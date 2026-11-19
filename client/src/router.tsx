@@ -1,13 +1,18 @@
 import { createBrowserRouter } from 'react-router';
 import { Layout } from './components/layout/Layout';
 import { HomePage } from './pages/HomePage';
-import { CatalogPage } from './pages/CatalogPage';
 import { ProductPage } from './pages/ProductPage';
-import { PackagesPage } from './pages/PackagesPage';
-import { CheckoutPage } from './pages/CheckoutPage';
-import { OrderConfirmPage } from './pages/OrderConfirmPage';
-import { MockPaymentPage } from './pages/MockPaymentPage';
-import { InfoPage } from './pages/InfoPage';
+import {
+  CatalogPage,
+  CheckoutPage,
+  DeliveryPage,
+  FaqPage,
+  MockPaymentPage,
+  OrderConfirmPage,
+  PackagesPage,
+  PrepareFilePage,
+  PrivacyPage,
+} from './pages/lazyPages';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { AdminRoute } from './admin/AdminRoute';
 
@@ -27,10 +32,10 @@ export const router = createBrowserRouter([
       { path: '/checkout', element: <CheckoutPage /> },
       { path: '/pedido/:id', element: <OrderConfirmPage /> },
       { path: '/pago-de-prueba/:folio', element: <MockPaymentPage /> },
-      { path: '/faq', element: <InfoPage title="Preguntas frecuentes" /> },
-      { path: '/preparar-archivo', element: <InfoPage title="Cómo preparar tu archivo" /> },
-      { path: '/tiempos-de-entrega', element: <InfoPage title="Tiempos de entrega" /> },
-      { path: '/aviso-de-privacidad', element: <InfoPage title="Aviso de privacidad" /> },
+      { path: '/faq', element: <FaqPage /> },
+      { path: '/preparar-archivo', element: <PrepareFilePage /> },
+      { path: '/tiempos-de-entrega', element: <DeliveryPage /> },
+      { path: '/aviso-de-privacidad', element: <PrivacyPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

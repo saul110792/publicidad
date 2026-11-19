@@ -24,6 +24,7 @@ import { price, qty } from '../lib/format';
 import { useApi } from '../lib/useApi';
 import { whatsappLink } from '../lib/whatsapp';
 import styles from './ProductPage.module.css';
+import { usePageMeta } from '../lib/usePageMeta';
 
 export function ProductPage() {
   const { slug = '' } = useParams();
@@ -49,6 +50,7 @@ export function ProductPage() {
 }
 
 function ProductView({ product }: { product: ProductDetailDTO }) {
+  usePageMeta(product.nombre, product.descripcion);
   const [userSel, setUserSel] = useState<Selection>({});
   const [file, setFile] = useState<File | null>(null);
   const [adding, setAdding] = useState<{

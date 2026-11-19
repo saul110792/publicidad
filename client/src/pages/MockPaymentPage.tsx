@@ -7,12 +7,14 @@ import { apiPost, ApiError } from '../lib/api';
 import { price } from '../lib/format';
 import { useApi } from '../lib/useApi';
 import styles from './MockPaymentPage.module.css';
+import { usePageMeta } from '../lib/usePageMeta';
 
 /**
  * Checkout simulado (PAYMENT_PROVIDER=mock). Sirve para probar el flujo completo en local
  * sin credenciales de Mercado Pago. El back lo desactiva en producción.
  */
 export function MockPaymentPage() {
+  usePageMeta('Pago de prueba');
   const { folio = '' } = useParams();
   const navigate = useNavigate();
   const { data: order, error } = useApi<OrderDTO>(`/api/orders/${encodeURIComponent(folio)}`);

@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { Outlet } from 'react-router';
 import { TopBar } from './TopBar';
 import { Header } from './Header';
@@ -12,13 +13,22 @@ export function Layout() {
         Saltar al contenido
       </a>
       <ScrollManager />
-      <PageViewTracker />
       <TopBar />
       <Header />
       <main id="contenido" tabIndex={-1}>
-        <Outlet />
+        <Suspense
+          fallback={
+            <div className="container" role="status" style={{ paddingBlock: 'var(--space-16)' }}>
+              Cargando…
+            </div>
+          }
+        >
+          <Outlet />
+        </Suspense>
       </main>
       <Footer />
+      {/* Al final: sus efectos corren después de los de la página, con el título ya puesto. */}
+      <PageViewTracker />
     </>
   );
 }

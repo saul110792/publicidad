@@ -4,14 +4,14 @@ Sitio para vender publicidad e impresos a negocios pequeños: cotizador en líne
 
 ## Stack
 
-| Parte    | Tecnología                                              |
-| -------- | ------------------------------------------------------- |
-| Front    | React 19 + Vite + React Router, TypeScript, CSS Modules |
-| Back     | Node 22 + Express 5, TypeScript, zod                    |
-| BD       | PostgreSQL + Drizzle ORM (Fase 2)                       |
-| Pagos    | Mercado Pago detrás de `PaymentProvider` (Fase 5)       |
-| Medición | GA4 + Meta Pixel detrás de `track()` (Fase 6)           |
-| Deploy   | Render: static site + web service + Postgres (Fase 8)   |
+| Parte    | Tecnología                                                |
+| -------- | --------------------------------------------------------- |
+| Front    | React 19 + Vite + React Router, TypeScript, CSS Modules   |
+| Back     | Node 22 + Express 5, TypeScript, zod                      |
+| BD       | PostgreSQL + Drizzle ORM (Fase 2)                         |
+| Pagos    | Mercado Pago detrás de `PaymentProvider` (Fase 5)         |
+| Medición | GA4 + Meta Pixel detrás de `track()` (Fase 6)             |
+| Deploy   | Render Blueprint: un web service (API + front) y Postgres |
 
 ## Estructura
 
@@ -90,7 +90,7 @@ Cloudinary puede permitir menos por archivo.
 - [x] 5. Pagos
 - [x] 6. Medición
 - [x] 7. Admin y dashboard
-- [ ] 8. Deploy en Render
+- [x] 8. Deploy en Render y checklist de producción
 
 ## Deploy en Render (Blueprint)
 
@@ -118,6 +118,56 @@ Notas:
 - **BD:** `DATABASE_URL` es la URL interna (sin SSL). Con la externa se activa SSL solo.
 - **Probar el build de producción en local:** `npm run build` y luego
   `NODE_ENV=production API_PORT=3100 CLIENT_URL=http://localhost:3100 npm start`.
+
+## Checklist de producción
+
+### Antes de abrir al público
+
+- [ ] **Planes de Render:** cambiar a `starter` (web) y `basic-256mb` (BD) para que el sitio no se
+      duerma y la base no venza. Activar los respaldos de la BD.
+- [ ] **Admin:** `ADMIN_EMAIL` y una `ADMIN_PASSWORD` larga. `SESSION_SECRET` lo genera Render.
+- [ ] **Precios:** capturar en `/admin/productos` el precio base, las escalas y el costo de cada
+      opción, y el precio de cada paquete y servicio. La lista marca lo que falta.
+- [ ] **Datos del negocio** en `client/src/config/site.ts`: marca, horario, dirección, cobertura,
+      tiempo de entrega y correo (hoy son placeholders como `[TU MARCA]`).
+- [ ] **WhatsApp:** `VITE_WHATSAPP_NUMBER` con lada (ej. `5215512345678`) y **Manual Deploy**.
+- [ ] **Textos pendientes:** factura y política de cambios en `/faq`; razón social, domicilio y
+      fecha en `/aviso-de-privacidad`. **El aviso es una plantilla: que lo revise un abogado.**
+- [ ] **Mercado Pago:** access token de producción en `MP_ACCESS_TOKEN`, webhook
+      `https://<tu-dominio>/api/payments/webhook/mercadopago` (evento _Pagos_) y su clave en
+      `MP_WEBHOOK_SECRET`. Hacer una compra real de monto bajo y reembolsarla.
+- [ ] **Cloudinary:** `CLOUDINARY_URL` y revisar el límite de tamaño por archivo de tu plan.
+- [ ] **Envío:** `SHIPPING_COST` en centavos, o dejarlo vacío para cotizarlo por WhatsApp.
+- [ ] **Medición:** `VITE_GA4_ID` y `VITE_META_PIXEL_ID`, y probar con el modo de depuración de
+      GA4 y el Pixel Helper que lleguen `page_view`, `add_to_cart` y `purchase`.
+- [ ] **Dominio propio** (opcional): agregarlo en Render y poner `CLIENT_URL=https://tudominio.com`.
+- [ ] **Imágenes de productos:** subirlas a Cloudinary y pegar las URLs en cada producto.
+
+### Ya resuelto en el código
+
+- Front y API en el mismo servicio (sin CORS; cookie del admin en el mismo sitio).
+- HTTPS lo da Render; cookies `Secure` y CSP con `upgrade-insecure-requests` en producción.
+- Headers de seguridad con helmet y CSP limitada a GA4, Meta Pixel y Cloudinary.
+- Límites por IP: 600/min en toda la API, 20 leads y 15 pedidos por cada 10 min por IP, 30 firmas
+  de subida por cada 10 min, 120 cotizaciones y 300 eventos por minuto. El login del admin se
+  bloquea 15 min tras 5 fallos. Los webhooks no tienen límite.
+- Compresión gzip/brotli, caché de un año en assets con hash e `index.html` sin caché.
+- `/api/health` revisa la BD: Render no manda tráfico a un deploy que no puede conectarse.
+- Apagado limpio con `SIGTERM` (Render reemplaza la instancia en cada deploy).
+- Migraciones automáticas al arrancar; el seed solo corre si la BD está vacía.
+- Precios recalculados siempre en el back; nunca se usa lo que manda el navegador.
+- `robots.txt` excluye admin, checkout y pedidos; cada página tiene su título y descripción.
+- Las páginas secundarias y el admin se cargan aparte: Inicio y Producto bajan menos JS.
+
+### Rendimiento (Lighthouse)
+
+El criterio es ≥ 90 en Rendimiento y Accesibilidad en Inicio y Producto. Mídelo ya desplegado
+(con plan `starter`, porque el gratis se duerme) en https://pagespeed.web.dev con la URL de
+Inicio y la de un producto, en móvil. Lo más probable si algo baja de 90:
+
+- **Rendimiento:** la tienda se arma en el navegador (SPA). Si el LCP sale alto, el siguiente
+  paso es prerenderizar Inicio y las páginas de producto.
+- **Accesibilidad:** contraste de colores nuevos y textos alternativos de las imágenes que subas.
 
 ## Cómo se calcula el precio
 

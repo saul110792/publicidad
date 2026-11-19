@@ -23,6 +23,7 @@ import { getUtm, track } from '../lib/analytics';
 import { apiPost, ApiError } from '../lib/api';
 import { price } from '../lib/format';
 import styles from './CheckoutPage.module.css';
+import { usePageMeta } from '../lib/usePageMeta';
 
 type Form = {
   nombre: string;
@@ -47,6 +48,7 @@ const INITIAL: Form = {
 };
 
 export function CheckoutPage() {
+  usePageMeta('Tu carrito');
   const state = useCart();
   const { data, error, loading } = useCartQuote(state);
   const navigate = useNavigate();

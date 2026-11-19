@@ -7,6 +7,7 @@ import { Icon } from '../components/ui/Icon';
 import { LoadError, SkeletonGrid } from '../components/ui/Skeleton';
 import { useApi } from '../lib/useApi';
 import styles from './CatalogPage.module.css';
+import { usePageMeta } from '../lib/usePageMeta';
 
 /**
  * Estado del catálogo = la URL.
@@ -77,6 +78,7 @@ export function CatalogPage() {
   const currentCat =
     selectedCats.length === 1 ? cats.data?.find((c) => c.slug === selectedCats[0]) : undefined;
   const title = currentCat?.nombre ?? 'Todos los productos';
+  usePageMeta(title, currentCat?.descripcion);
   const activeCount = selectedCats.length + (giro ? 1 : 0) + (rapida ? 1 : 0) + (diseno ? 1 : 0);
 
   function toggleCat(slug: string) {

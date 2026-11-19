@@ -1,7 +1,9 @@
 import { PagePlaceholder } from '../components/PagePlaceholder';
 import { Button } from '../components/ui/Button';
+import { usePageMeta } from '../lib/usePageMeta';
 
 export function NotFoundPage() {
+  usePageMeta('Página no encontrada');
   return (
     <PagePlaceholder title="No encontramos esta página">
       <p style={{ marginBlock: 'var(--space-4) var(--space-6)', color: 'var(--color-text-2)' }}>
