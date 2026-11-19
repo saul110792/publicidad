@@ -1,4 +1,5 @@
-import type { PackageDTO } from '@publicidad/shared';
+import { toPesos, type PackageDTO } from '@publicidad/shared';
+import { track } from '../../lib/analytics';
 import { giroLabel, price } from '../../lib/format';
 import { useNavigate } from 'react-router';
 import { cart } from '../../features/cart/cartStore';
@@ -54,6 +55,12 @@ export function PackageCard({ pkg, tone = 'light', headingLevel = 'h3' }: Props)
       <Button
         onClick={() => {
           cart.addPackage(pkg.slug);
+          track('add_to_cart', {
+            value: toPesos(pkg.precio),
+            items: [
+              { item_id: pkg.slug, item_name: `Paquete ${pkg.nombre}`, item_category: 'Paquetes' },
+            ],
+          });
           navigate('/checkout');
         }}
         variant={tone === 'dark' ? 'primary' : pkg.recomendado ? 'primary' : 'dark'}

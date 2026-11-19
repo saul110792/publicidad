@@ -3,6 +3,7 @@ import { TopBar } from './TopBar';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { ScrollManager } from './ScrollManager';
+import { PageViewTracker } from './PageViewTracker';
 
 export function Layout() {
   return (
@@ -11,6 +12,7 @@ export function Layout() {
         Saltar al contenido
       </a>
       <ScrollManager />
+      <PageViewTracker />
       <TopBar />
       <Header />
       <main id="contenido" tabIndex={-1}>

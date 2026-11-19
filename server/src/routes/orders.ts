@@ -14,7 +14,7 @@ import {
   type OrderDTO,
 } from '@publicidad/shared';
 import { db } from '../db/client';
-import { customers, orderItems, orders, products } from '../db/schema';
+import { customers, orderItems, orders, packages, products } from '../db/schema';
 import { HttpError } from '../middleware/errors';
 import { buildOffer, priceLines, quoteCart, shippingCost } from '../services/cart';
 import { FOLIO_PATTERN, generateFolio } from '../services/folio';
@@ -239,18 +239,19 @@ ordersRouter.get('/orders/:folio', async (req, res) => {
     .limit(1);
   if (!order) throw new HttpError(404, 'Pedido no encontrado');
   const items = await db
-    .select({ item: orderItems, productSlug: products.slug })
+    .select({ item: orderItems, productSlug: products.slug, packageSlug: packages.slug })
     .from(orderItems)
     .leftJoin(products, eq(products.id, orderItems.productId))
+    .leftJoin(packages, eq(packages.id, orderItems.packageId))
     .where(eq(orderItems.orderId, order.order.id))
     .orderBy(asc(orderItems.id));
 
-  const lineas: CartLineDTO[] = items.map(({ item: it }) => {
+  const lineas: CartLineDTO[] = items.map(({ item: it, productSlug, packageSlug }) => {
     const op = it.opciones as { nombre?: string; detalle?: string[] };
     return {
       id: String(it.id),
       tipo: it.tipo,
-      slug: '',
+      slug: productSlug ?? packageSlug ?? '',
       nombre: op.nombre ?? '',
       imagen: null,
       detalle: op.detalle ?? [],

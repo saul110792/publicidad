@@ -6,6 +6,7 @@ import { errorHandler, notFound } from './middleware/errors';
 import { catalogRouter } from './routes/catalog';
 import { ordersRouter } from './routes/orders';
 import { paymentsRouter } from './routes/payments';
+import { eventsRouter } from './routes/events';
 import { quoteRouter } from './routes/quote';
 
 export function createApp() {
@@ -24,6 +25,7 @@ export function createApp() {
   app.use('/api', quoteRouter);
   app.use('/api', ordersRouter);
   app.use('/api', paymentsRouter);
+  app.use('/api', eventsRouter);
 
   app.use('/api', notFound);
   app.use(errorHandler);

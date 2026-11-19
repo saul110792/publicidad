@@ -5,7 +5,10 @@ import '@fontsource-variable/archivo';
 import './styles/reset.css';
 import './styles/tokens.css';
 import './styles/global.css';
+import { initAnalytics } from './lib/analytics';
 import { router } from './router';
+
+initAnalytics();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

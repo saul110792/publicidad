@@ -1,5 +1,7 @@
+import { useEffect } from 'react';
 import { useParams } from 'react-router';
-import { DELIVERY_METHODS, PAYMENT_METHODS, type OrderDTO } from '@publicidad/shared';
+import { DELIVERY_METHODS, PAYMENT_METHODS, toPesos, type OrderDTO } from '@publicidad/shared';
+import { track, trackOnce } from '../lib/analytics';
 import { PagePlaceholder } from '../components/PagePlaceholder';
 import { Button } from '../components/ui/Button';
 import { Icon } from '../components/ui/Icon';
@@ -30,6 +32,29 @@ function paymentStep(o: OrderDTO): string {
 export function OrderConfirmPage() {
   const { id = '' } = useParams();
   const { data: order, error, reload } = useApi<OrderDTO>(`/api/orders/${encodeURIComponent(id)}`);
+
+  // purchase: con tarjeta, cuando el pago ya se acreditó; con otros métodos (o si el pago
+  // en línea no aplica), al crear el pedido. Una sola vez por folio.
+  useEffect(() => {
+    if (!order) return;
+    if (order.estadoPago !== 'pagado' && order.pagoEnLinea) return;
+    trackOnce(`purchase:${order.folio}`, () =>
+      track('purchase', {
+        transaction_id: order.folio,
+        value: toPesos(order.total),
+        shipping: toPesos(order.envio),
+        payment_type: order.metodoPago,
+        package_upgrade: order.packageUpgrade,
+        items: order.lineas.map((l) => ({
+          item_id: l.slug || l.nombre,
+          item_name: l.nombre,
+          item_category: l.tipo === 'paquete' ? 'Paquetes' : undefined,
+          quantity: l.cantidad,
+          price: toPesos(l.total),
+        })),
+      }),
+    );
+  }, [order]);
 
   if (error && !order) {
     return (

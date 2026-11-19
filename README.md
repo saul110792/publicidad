@@ -88,7 +88,7 @@ Cloudinary puede permitir menos por archivo.
 - [x] 3. Cotizador y WhatsApp con `ref_code`
 - [x] 4. Carrito, checkout y oferta de paquete
 - [x] 5. Pagos
-- [ ] 6. Medición
+- [x] 6. Medición
 - [ ] 7. Admin y dashboard
 - [ ] 8. Deploy en Render
 
@@ -148,3 +148,37 @@ pagar" lleva a `/pago-de-prueba/:folio`, donde apruebas o rechazas el pago. En p
 **Probar con Mercado Pago:** usa el access token de prueba y las tarjetas de prueba de su
 documentación. En local los webhooks no llegan (no hay URL pública), pero el pago se confirma al
 regresar del checkout.
+
+## Medición
+
+Todo el sitio llama a `track(evento, payload)` (`client/src/lib/analytics.ts`), que manda cada
+evento a tres lugares:
+
+- **GA4**, si hay `VITE_GA4_ID` (los montos van en pesos, con `currency: 'MXN'`).
+- **Meta Pixel**, si hay `VITE_META_PIXEL_ID` (eventos estándar cuando existen: `PageView`,
+  `ViewContent`, `AddToCart`, `InitiateCheckout`, `Contact`, `Purchase`; el resto, personalizados).
+- **La API** (`POST /api/events` → tabla `events`), que alimenta el embudo del dashboard aunque no
+  haya GA4.
+
+Los scripts de GA4 y Pixel se descargan después de que la página cargó, para no afectar el
+rendimiento.
+
+| Paso                            | Evento                                                                |
+| ------------------------------- | --------------------------------------------------------------------- |
+| Cambio de ruta                  | `page_view`                                                           |
+| Abre un producto                | `view_item`                                                           |
+| Cambia una opción del cotizador | `quote_updated`                                                       |
+| Agrega producto o paquete       | `add_to_cart`                                                         |
+| Clic en "Cotizar por WhatsApp"  | `click_whatsapp` (con `ref_code`)                                     |
+| Abre el checkout                | `begin_checkout`                                                      |
+| Se muestra / acepta / rechaza   | `package_offer_shown` / `package_upgrade` / `package_offer_dismissed` |
+| Compra                          | `purchase` (con `value`, `items`, `package_upgrade`)                  |
+
+`purchase` se manda una sola vez por folio: con tarjeta, cuando el pago se acredita; con
+transferencia o pago en tienda, al crear el pedido.
+
+**UTMs:** al llegar con `utm_source/medium/campaign` se guardan en `localStorage` (gana el último
+clic, valen 30 días) y viajan en los leads de WhatsApp, los pedidos y los eventos. El QR de los
+impresos apunta a `/?utm_source=qr&utm_campaign=pedido-{folio}`.
+
+Si activas GA4 o el Pixel, menciónalo en el aviso de privacidad.

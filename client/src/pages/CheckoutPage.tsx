@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router';
 import {
   anticipoDe,
@@ -7,6 +7,7 @@ import {
   ORIGENES,
   PAYMENT_METHODS,
   sumOrNull,
+  toPesos,
   type DeliveryMethod,
   type OrderCreatedDTO,
   type OrderRequest,
@@ -18,6 +19,7 @@ import { LoadError } from '../components/ui/Skeleton';
 import { cart, useCart } from '../features/cart/cartStore';
 import { PackageOffer } from '../features/cart/PackageOffer';
 import { useCartQuote } from '../features/cart/useCartQuote';
+import { getUtm, track } from '../lib/analytics';
 import { apiPost, ApiError } from '../lib/api';
 import { price } from '../lib/format';
 import styles from './CheckoutPage.module.css';
@@ -68,6 +70,38 @@ export function CheckoutPage() {
   const envio = form.entrega === 'recoger' ? 0 : data ? data.envioDomicilio : null;
   const total = data ? sumOrNull([data.subtotal, envio]) : null;
   const anticipo = form.metodoPago === 'tienda' ? anticipoDe(total) : null;
+  const offer = !loading ? data?.oferta : null;
+  const offerSlug = offer?.paquete.slug;
+
+  // begin_checkout una vez por visita al checkout, cuando ya hay cotización.
+  const checkoutTracked = useRef(false);
+  useEffect(() => {
+    if (checkoutTracked.current || !data || !data.lineas.length) return;
+    checkoutTracked.current = true;
+    track('begin_checkout', {
+      value: toPesos(data.subtotal),
+      items: data.lineas.map((l) => ({
+        item_id: l.slug,
+        item_name: l.nombre,
+        quantity: l.cantidad,
+        price: toPesos(l.total),
+      })),
+    });
+  }, [data]);
+
+  // package_offer_shown una vez por paquete ofrecido.
+  const offersTracked = useRef(new Set<string>());
+  useEffect(() => {
+    if (!offer || !offerSlug || offersTracked.current.has(offerSlug)) return;
+    offersTracked.current.add(offerSlug);
+    track('package_offer_shown', {
+      package: offerSlug,
+      cubiertos: offer.cubiertos.length,
+      componentes: offer.cubiertos.length + offer.faltantes.length,
+      productos: offer.cubiertos.map((c) => c.productSlug),
+      value: toPesos(offer.paquete.precio),
+    });
+  }, [offer, offerSlug]);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -85,6 +119,7 @@ export function CheckoutPage() {
       direccion: form.entrega === 'domicilio' ? form.direccion : undefined,
       metodoPago: form.metodoPago,
       comoNosConocio: form.comoNosConocio as OrderRequest['comoNosConocio'],
+      utm: getUtm(),
     };
     try {
       const res = await apiPost<OrderCreatedDTO>('/api/orders', body);
@@ -137,8 +172,6 @@ export function CheckoutPage() {
       </div>
     );
   }
-
-  const offer = !loading ? data?.oferta : null;
 
   return (
     <div className={`container ${styles.page}`}>
@@ -194,8 +227,25 @@ export function CheckoutPage() {
 
           {offer && (
             <PackageOffer offer={offer}>
-              <Button onClick={() => cart.acceptOffer(offer)}>Cambiar a paquete</Button>
-              <Button variant="ghost-dark" onClick={() => cart.dismissOffer(offer.paquete.slug)}>
+              <Button
+                onClick={() => {
+                  cart.acceptOffer(offer);
+                  track('package_upgrade', {
+                    package: offer.paquete.slug,
+                    productos: offer.cubiertos.map((c) => c.productSlug),
+                    value: toPesos(offer.paquete.precio),
+                  });
+                }}
+              >
+                Cambiar a paquete
+              </Button>
+              <Button
+                variant="ghost-dark"
+                onClick={() => {
+                  cart.dismissOffer(offer.paquete.slug);
+                  track('package_offer_dismissed', { package: offer.paquete.slug });
+                }}
+              >
                 No, gracias
               </Button>
             </PackageOffer>

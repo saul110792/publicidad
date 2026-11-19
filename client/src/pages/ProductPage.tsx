@@ -1,6 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router';
-import type { CartFile, LeadDTO, ProductDetailDTO, Selection } from '@publicidad/shared';
+import {
+  toPesos,
+  type CartFile,
+  type LeadDTO,
+  type ProductDetailDTO,
+  type Selection,
+} from '@publicidad/shared';
 import { Button } from '../components/ui/Button';
 import { Icon } from '../components/ui/Icon';
 import { LoadError } from '../components/ui/Skeleton';
@@ -12,6 +18,7 @@ import { DesignFile } from '../features/quote/DesignFile';
 import { OptionGroup } from '../features/quote/OptionGroup';
 import { ProductGallery } from '../features/quote/ProductGallery';
 import { useQuote } from '../features/quote/useQuote';
+import { getUtm, track } from '../lib/analytics';
 import { apiPost, ApiError } from '../lib/api';
 import { price, qty } from '../lib/format';
 import { useApi } from '../lib/useApi';
@@ -61,6 +68,30 @@ function ProductView({ product }: { product: ProductDetailDTO }) {
 
   const { quote, loading: quoting, error: quoteError } = useQuote(product.slug, selection);
 
+  const trackItem = () => ({
+    item_id: product.slug,
+    item_name: product.nombre,
+    item_category: product.categoria.nombre,
+    quantity: quote?.cantidad,
+    price: toPesos(quote?.total),
+  });
+
+  // view_item una vez por producto (el componente se monta de nuevo al cambiar de producto).
+  const viewed = useRef(false);
+  useEffect(() => {
+    if (viewed.current) return;
+    viewed.current = true;
+    track('view_item', {
+      items: [
+        {
+          item_id: product.slug,
+          item_name: product.nombre,
+          item_category: product.categoria.nombre,
+        },
+      ],
+    });
+  }, [product]);
+
   const designGroup = product.grupos.find((g) => g.clave === 'diseno');
   const designOption = designGroup?.opciones.find(
     (o) => o.id === selection[String(designGroup.id)],
@@ -83,6 +114,7 @@ function ProductView({ product }: { product: ProductDetailDTO }) {
       }
     }
     cart.addProduct(product.slug, selection, archivo);
+    track('add_to_cart', { value: toPesos(quote?.total), items: [trackItem()] });
     setAdding({ state: 'done', note });
   }
 
@@ -95,11 +127,17 @@ function ProductView({ product }: { product: ProductDetailDTO }) {
       const res = await apiPost<LeadDTO>('/api/leads', {
         productSlug: product.slug,
         opciones: selection,
+        utm: getUtm(),
       });
       const url = whatsappLink(res.mensaje);
       if (win) win.location.href = url;
       else window.location.href = url;
       setLead({ refCode: res.refCode });
+      track('click_whatsapp', {
+        ref_code: res.refCode,
+        item_id: product.slug,
+        value: toPesos(quote?.total),
+      });
     } catch (err) {
       win?.close();
       setLead({
@@ -165,7 +203,14 @@ function ProductView({ product }: { product: ProductDetailDTO }) {
                 key={g.id}
                 group={g}
                 selectedId={selection[String(g.id)]!}
-                onSelect={(id) => setUserSel((s) => ({ ...s, [String(g.id)]: id }))}
+                onSelect={(id) => {
+                  setUserSel((s) => ({ ...s, [String(g.id)]: id }));
+                  track('quote_updated', {
+                    item_id: product.slug,
+                    grupo: g.nombre,
+                    opcion: g.opciones.find((o) => o.id === id)?.label,
+                  });
+                }}
               />
             ))}
 
