@@ -55,7 +55,11 @@ a {
   padding: 0;
   margin: -1px;
   overflow: hidden;
+
+  /* clip para navegadores viejos; clip-path para los actuales. */
+  /* stylelint-disable-next-line property-no-deprecated */
   clip: rect(0 0 0 0);
+  clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
 }

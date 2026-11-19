@@ -76,3 +76,13 @@
 .light:hover {
   background: var(--color-bg);
 }
+
+/* Verde de WhatsApp con texto oscuro (el blanco sobre #25d366 no tiene contraste suficiente). */
+.whatsapp {
+  background: var(--color-whatsapp);
+  color: var(--color-whatsapp-ink);
+}
+
+.whatsapp:hover {
+  background: var(--color-whatsapp-hover);
+}

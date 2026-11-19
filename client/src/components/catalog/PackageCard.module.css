@@ -7,6 +7,71 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card-lg);
   background: var(--color-surface);
+  box-shadow: var(--shadow-soft);
+  transition:
+    box-shadow 200ms ease,
+    transform 200ms ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-lift);
+  transform: translateY(-3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+
+  .card:hover {
+    transform: none;
+  }
+}
+
+/* Collage con las ilustraciones de los componentes */
+.collage {
+  position: relative;
+  height: 132px;
+  margin: calc(var(--space-6) * -1) calc(var(--space-6) * -1) var(--space-3);
+  overflow: hidden;
+  border-radius: var(--radius-card-lg) var(--radius-card-lg) 0 0;
+  background: var(--color-accent-soft);
+}
+
+.collage img {
+  position: absolute;
+  top: 16px;
+  width: 46%;
+  aspect-ratio: 4 / 3;
+  height: auto;
+  border: 3px solid var(--color-surface);
+  border-radius: var(--radius-control);
+  object-fit: cover;
+  box-shadow: var(--shadow-card);
+}
+
+.collage img:nth-child(1) {
+  left: 4%;
+  transform: rotate(-6deg);
+}
+
+.collage img:nth-child(2) {
+  left: 27%;
+  top: 26px;
+  z-index: 1;
+}
+
+.collage img:nth-child(3) {
+  right: 4%;
+  transform: rotate(6deg);
+}
+
+.dark .collage {
+  background: #2b2c32;
+}
+
+.dark .collage img {
+  border-color: #3a3b42;
 }
 
 .recommended {
@@ -15,8 +80,9 @@
 
 .dark {
   border-color: var(--color-dark-border);
-  background: #202127;
+  background: linear-gradient(180deg, #25262d, #1d1e23);
   color: var(--color-on-dark);
+  box-shadow: 0 20px 40px -24px rgb(0 0 0 / 0.7);
 }
 
 .badge {

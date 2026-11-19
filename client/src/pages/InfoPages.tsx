@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Link } from 'react-router';
 import type { ProductCardDTO } from '@publicidad/shared';
 import { Button } from '../components/ui/Button';
+import { Icon } from '../components/ui/Icon';
 import { site } from '../config/site';
 import { usePageMeta } from '../lib/usePageMeta';
 import { useApi } from '../lib/useApi';
@@ -29,7 +30,8 @@ function InfoLayout({
       <div className={styles.body}>{children}</div>
       <aside className={styles.help} aria-label="Ayuda">
         <p>¿Te quedó alguna duda?</p>
-        <Button href={whatsappLink('Hola, tengo una pregunta.')} variant="secondary">
+        <Button href={whatsappLink('Hola, tengo una pregunta.')} variant="whatsapp">
+          <Icon name="whatsapp" size={20} />
           Escríbenos por WhatsApp
         </Button>
       </aside>

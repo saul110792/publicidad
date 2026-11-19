@@ -62,8 +62,13 @@ export function Footer() {
           </h2>
           <ul role="list" className={styles.links}>
             <li>
-              <a href={whatsappLink()} target="_blank" rel="noopener noreferrer">
-                <Icon name="chat" size={18} />
+              <a
+                href={whatsappLink()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.wa}
+              >
+                <Icon name="whatsapp" size={18} />
                 WhatsApp {site.whatsappDisplay}
               </a>
             </li>

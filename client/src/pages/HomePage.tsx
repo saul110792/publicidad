@@ -7,6 +7,7 @@ import { Icon, type IconName } from '../components/ui/Icon';
 import { LoadError, SkeletonGrid } from '../components/ui/Skeleton';
 import { site } from '../config/site';
 import { iconForCategory } from '../config/categoryIcons';
+import { categoryImage } from '../config/productImages';
 import { useApi } from '../lib/useApi';
 import { whatsappLink } from '../lib/whatsapp';
 import styles from './HomePage.module.css';
@@ -18,14 +19,27 @@ const trustPoints: { icon: IconName; text: string }[] = [
   { icon: 'card', text: 'Pago en línea o en tienda' },
 ];
 
-const steps = [
-  { title: 'Elige y cotiza', text: 'Escoge tu producto y ve el precio al momento.' },
-  { title: 'Sube tu diseño o pídelo', text: 'Manda tu archivo o deja que lo diseñemos por ti.' },
+const steps: { icon: IconName; title: string; text: string }[] = [
   {
+    icon: 'search',
+    title: 'Elige y cotiza',
+    text: 'Escoge tu producto y ve el precio al momento.',
+  },
+  {
+    icon: 'upload',
+    title: 'Sube tu diseño o pídelo',
+    text: 'Manda tu archivo o deja que lo diseñemos por ti.',
+  },
+  {
+    icon: 'eye',
     title: 'Aprueba la prueba digital',
     text: 'Te la mandamos por WhatsApp. No imprimimos sin tu OK.',
   },
-  { title: 'Recibe o recoge', text: `Listo en ${site.deliveryTime}. Envío o recoges en tienda.` },
+  {
+    icon: 'truck',
+    title: 'Recibe o recoge',
+    text: `Listo en ${site.deliveryTime}. Envío o recoges en tienda.`,
+  },
 ];
 
 export function HomePage() {
@@ -98,8 +112,19 @@ export function HomePage() {
             {data?.categorias.map((c) => (
               <li key={c.slug}>
                 <Link to={`/productos/${c.slug}`} className={styles.cat}>
-                  <span className={styles.catIcon}>
-                    <Icon name={iconForCategory(c.slug)} size={26} />
+                  <span className={styles.catMedia} aria-hidden="true">
+                    {categoryImage(c.slug) ? (
+                      <img
+                        src={categoryImage(c.slug)!}
+                        alt=""
+                        width={400}
+                        height={300}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ) : (
+                      <Icon name={iconForCategory(c.slug)} size={32} />
+                    )}
                   </span>
                   <span className={styles.catName}>{c.nombre}</span>
                   <span className={styles.catDesc}>{c.descripcion}</span>
@@ -111,27 +136,29 @@ export function HomePage() {
       </section>
 
       {/* Lo más pedido */}
-      <section className={`container ${styles.section}`} aria-labelledby="top-title">
-        <div className={styles.sectionHead}>
-          <h2 id="top-title" className={styles.h2}>
-            Lo más pedido
-          </h2>
-          <Link to="/productos" className={styles.more}>
-            Ver todo el catálogo <Icon name="arrowRight" size={18} />
-          </Link>
-        </div>
-        {loading && !data ? (
-          <SkeletonGrid count={4} />
-        ) : (
-          <ul role="list" className={styles.products}>
-            {data?.masPedidos.map((p) => (
-              <li key={p.slug}>
-                <ProductCard product={p} showCta />
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+      <div className={styles.band}>
+        <section className={`container ${styles.section}`} aria-labelledby="top-title">
+          <div className={styles.sectionHead}>
+            <h2 id="top-title" className={styles.h2}>
+              Lo más pedido
+            </h2>
+            <Link to="/productos" className={styles.more}>
+              Ver todo el catálogo <Icon name="arrowRight" size={18} />
+            </Link>
+          </div>
+          {loading && !data ? (
+            <SkeletonGrid count={4} />
+          ) : (
+            <ul role="list" className={styles.products}>
+              {data?.masPedidos.map((p) => (
+                <li key={p.slug}>
+                  <ProductCard product={p} showCta />
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </div>
 
       {/* Paquetes destacados */}
       <section className={styles.darkWrap} aria-labelledby="pkg-title">
@@ -177,8 +204,11 @@ export function HomePage() {
         <ol role="list" className={styles.steps}>
           {steps.map((s, i) => (
             <li key={s.title} className={styles.step}>
-              <span className={styles.stepNum} aria-hidden="true">
-                {i + 1}
+              <span className={styles.stepHead} aria-hidden="true">
+                <span className={styles.stepIcon}>
+                  <Icon name={s.icon} size={24} />
+                </span>
+                <span className={styles.stepNum}>{i + 1}</span>
               </span>
               <h3 className={styles.stepTitle}>{s.title}</h3>
               <p className={styles.stepText}>{s.text}</p>
@@ -200,10 +230,10 @@ export function HomePage() {
           </div>
           <Button
             href={whatsappLink('Hola, quiero que me recomienden qué publicidad pedir.')}
-            variant="light"
+            variant="whatsapp"
             size="lg"
           >
-            <Icon name="chat" size={20} />
+            <Icon name="whatsapp" size={22} />
             Escríbenos por WhatsApp
           </Button>
         </div>

@@ -9,6 +9,7 @@ import {
   type AdminOrderUpdate,
 } from '@publicidad/shared';
 import { Button } from '../../components/ui/Button';
+import { Icon } from '../../components/ui/Icon';
 import { giroLabel } from '../../lib/format';
 import { adminApi, errorMessage, useAdmin } from '../api';
 import { Notice, PagoBadge } from '../ui';
@@ -67,7 +68,8 @@ function Detail({ o, onSaved }: { o: AdminOrderDetail; onSaved: () => void }) {
             {o.packageUpgrade && ' · cambió a paquete'}
           </p>
         </div>
-        <Button href={waCliente} variant="secondary">
+        <Button href={waCliente} variant="whatsapp">
+          <Icon name="whatsapp" size={20} />
           Escribir al cliente
         </Button>
       </div>

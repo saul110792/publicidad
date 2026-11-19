@@ -223,11 +223,11 @@
   transition: opacity var(--transition);
 }
 
-.grid li {
+.grid > li {
   display: flex;
 }
 
-.grid li > * {
+.grid > li > * {
   flex: 1;
 }
 
@@ -275,4 +275,9 @@
   .sidebar {
     display: flex;
   }
+}
+
+/* Hijo del grid principal: sin min-width: 0 un texto largo podría desbordarlo. */
+.results {
+  min-width: 0;
 }

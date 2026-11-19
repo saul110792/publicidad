@@ -2,7 +2,7 @@ import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 import { Link } from 'react-router';
 import styles from './Button.module.css';
 
-type Variant = 'primary' | 'secondary' | 'dark' | 'ghost-dark' | 'light';
+type Variant = 'primary' | 'secondary' | 'dark' | 'ghost-dark' | 'light' | 'whatsapp';
 type Size = 'md' | 'lg';
 
 type BaseProps = {

@@ -98,9 +98,10 @@ export function PackagesPage() {
               </p>
               <Button
                 href={whatsappLink(`Hola, me interesa el servicio de ${s.nombre}.`)}
-                variant="secondary"
+                variant="whatsapp"
                 block
               >
+                <Icon name="whatsapp" size={20} />
                 Me interesa
               </Button>
             </li>
@@ -120,10 +121,10 @@ export function PackagesPage() {
           </div>
           <Button
             href={whatsappLink('Hola, quiero armar un paquete para mi negocio.')}
-            variant="light"
+            variant="whatsapp"
             size="lg"
           >
-            <Icon name="chat" size={20} />
+            <Icon name="whatsapp" size={22} />
             Armar mi paquete
           </Button>
         </div>

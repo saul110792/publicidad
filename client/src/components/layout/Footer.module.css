@@ -80,3 +80,16 @@
     grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
   }
 }
+
+.links a.wa {
+  color: var(--color-whatsapp);
+}
+
+.links a.wa:hover {
+  color: var(--color-on-dark);
+}
+
+/* Columna de marca: texto corto y legible. */
+.brandCol {
+  max-width: 36ch;
+}

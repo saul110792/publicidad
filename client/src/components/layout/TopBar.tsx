@@ -18,7 +18,7 @@ export function TopBar() {
           </li>
         </ul>
         <a className={styles.wa} href={whatsappLink()} target="_blank" rel="noopener noreferrer">
-          <Icon name="chat" size={16} />
+          <Icon name="whatsapp" size={18} />
           <span>
             WhatsApp<span className={styles.waNumber}> {site.whatsappDisplay}</span>
           </span>

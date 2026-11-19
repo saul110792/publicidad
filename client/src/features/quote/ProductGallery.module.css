@@ -6,9 +6,10 @@
 .main {
   overflow: hidden;
   aspect-ratio: 4 / 3;
-  border-radius: var(--radius-card-lg);
   border: 1px solid var(--color-border);
+  border-radius: var(--radius-card-lg);
   background: var(--color-surface);
+  box-shadow: var(--shadow-card);
 }
 
 .main img {
@@ -17,34 +18,45 @@
   object-fit: cover;
 }
 
-.art {
+/* Ilustración: "Detalle" y "Acercamiento" son recortes de la misma imagen. */
+.illus {
   position: relative;
+  display: block;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+
+.illus img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 300ms ease;
+}
+
+.illus img[data-view='1'] {
+  transform: scale(1.7);
+  transform-origin: 38% 42%;
+}
+
+.illus img[data-view='2'] {
+  transform: scale(1.7);
+  transform-origin: 66% 62%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .illus img {
+    transition: none;
+  }
+}
+
+.art {
   display: grid;
   place-items: center;
   width: 100%;
   height: 100%;
   color: var(--color-accent);
   background: var(--color-accent-soft);
-}
-
-.art[data-variant='1'] {
-  color: var(--color-on-dark);
-  background: var(--color-ink);
-}
-
-.art[data-variant='2'] {
-  color: var(--color-ink);
-  background: #ece8df;
-}
-
-.art[data-variant='3'] {
-  color: var(--color-accent-on-dark);
-  background: #2b2c32;
-}
-
-.art[data-variant='4'] {
-  color: var(--color-success-text);
-  background: var(--color-success-bg);
 }
 
 .caption {
@@ -61,7 +73,6 @@
 
 .thumbs {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
   gap: var(--space-2);
 }
 
@@ -71,6 +82,12 @@
   min-height: var(--tap);
   border: 2px solid transparent;
   border-radius: var(--radius-control);
+  background: var(--color-surface);
+  transition: border-color var(--transition);
+}
+
+.thumb:hover {
+  border-color: var(--color-border-input);
 }
 
 .thumb[aria-pressed='true'] {

@@ -62,7 +62,10 @@ export function OrderConfirmPage() {
     return (
       <PagePlaceholder title="No encontramos este pedido">
         <p className={styles.muted}>Revisa el folio o escríbenos por WhatsApp.</p>
-        <Button href={whatsappLink(`Hola, busco mi pedido ${id}.`)}>Escríbenos</Button>
+        <Button href={whatsappLink(`Hola, busco mi pedido ${id}.`)} variant="whatsapp">
+          <Icon name="whatsapp" size={20} />
+          Escríbenos
+        </Button>
       </PagePlaceholder>
     );
   }
@@ -129,10 +132,10 @@ export function OrderConfirmPage() {
           </ol>
           <Button
             href={whatsappLink(`Hola, acabo de hacer el pedido ${order.folio}.`)}
-            variant="secondary"
+            variant="whatsapp"
             block
           >
-            <Icon name="chat" size={20} />
+            <Icon name="whatsapp" size={22} />
             Escríbenos por WhatsApp
           </Button>
         </section>
@@ -195,7 +198,9 @@ export function OrderConfirmPage() {
               href={whatsappLink(
                 `Hola, hice el pedido ${order.folio} y me interesa completar el Paquete ${order.oferta.paquete.nombre}.`,
               )}
+              variant="whatsapp"
             >
+              <Icon name="whatsapp" size={20} />
               Me interesa el paquete
             </Button>
           </PackageOffer>

@@ -178,6 +178,7 @@ function ProductView({ product }: { product: ProductDetailDTO }) {
             imagenes={product.imagenes}
             nombre={product.nombre}
             categoria={product.categoria.slug}
+            slug={product.slug}
           />
         </div>
 
@@ -292,11 +293,11 @@ function ProductView({ product }: { product: ProductDetailDTO }) {
               <Button
                 block
                 size="lg"
-                variant="secondary"
+                variant="whatsapp"
                 onClick={cotizarWhatsApp}
                 disabled={lead.sending}
               >
-                <Icon name="chat" size={20} />
+                <Icon name="whatsapp" size={22} />
                 {lead.sending ? 'Abriendo WhatsApp…' : 'Cotizar por WhatsApp'}
               </Button>
               {lead.refCode && (

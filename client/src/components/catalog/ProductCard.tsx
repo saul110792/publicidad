@@ -1,6 +1,7 @@
 import { Link } from 'react-router';
 import type { ProductCardDTO } from '@publicidad/shared';
 import { iconForCategory } from '../../config/categoryIcons';
+import { productImage } from '../../config/productImages';
 import { price, qty } from '../../lib/format';
 import { Icon } from '../ui/Icon';
 import styles from './ProductCard.module.css';
@@ -15,11 +16,12 @@ type Props = {
 export function ProductCard({ product: p, showCta = false, headingLevel = 'h3' }: Props) {
   const Heading = headingLevel;
   const href = `/producto/${p.slug}`;
+  const img = productImage(p.slug, p.imagen);
   return (
     <article className={styles.card}>
       <div className={styles.media}>
-        {p.imagen ? (
-          <img src={p.imagen} alt="" loading="lazy" width={400} height={300} />
+        {img ? (
+          <img src={img} alt="" loading="lazy" decoding="async" width={400} height={300} />
         ) : (
           <div className={styles.art} data-cat={p.categoria.slug} aria-hidden="true">
             <Icon name={iconForCategory(p.categoria.slug)} size={44} />

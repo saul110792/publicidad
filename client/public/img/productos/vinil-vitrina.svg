@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E3EAF1"/><stop offset="1" stop-color="#CFDBE7"/></linearGradient>
+<filter id="sh" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="14" stdDeviation="14" flood-color="#16171B" flood-opacity=".18"/></filter>
+<filter id="sh2" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#16171B" flood-opacity=".16"/></filter>
+</defs>
+<rect width="800" height="600" fill="url(#bg)"/>
+<circle cx="690" cy="90" r="150" fill="#fff" opacity=".28"/>
+<circle cx="90" cy="540" r="190" fill="#fff" opacity=".22"/>
+<g filter="url(#sh)"><rect x="140" y="90" width="520" height="430" rx="8" fill="#2B2C32"/><rect x="160" y="110" width="480" height="390" rx="4" fill="#BFD3E6"/><path d="M160 110 L330 110 L160 330 Z" fill="#fff" opacity=".35"/><path d="M380 500 L640 160 L640 260 L460 500 Z" fill="#fff" opacity=".2"/><text x="400" y="250" font-family="Archivo, 'Segoe UI', Roboto, Arial, sans-serif" font-size="52" font-weight="900" fill="#C8321F" text-anchor="middle">ABIERTO</text><text x="400" y="300" font-family="Archivo, 'Segoe UI', Roboto, Arial, sans-serif" font-size="22" font-weight="700" fill="#16171B" text-anchor="middle">Lun a Sáb · 9 a 19 h</text><rect x="300" y="340" width="200" height="56" rx="28" fill="#C8321F"/><text x="400" y="376" font-family="Archivo, 'Segoe UI', Roboto, Arial, sans-serif" font-size="22" font-weight="800" fill="#fff" text-anchor="middle">20% OFF</text></g>
+</svg>

@@ -1,12 +1,26 @@
 /* ---------- Hero ---------- */
 .heroWrap {
+  position: relative;
   overflow: hidden;
+
+  /* Luz cálida detrás de los mockups y una trama de puntos muy suave. */
+  background:
+    radial-gradient(ellipse 60% 70% at 85% 45%, rgb(200 50 31 / 0.1), transparent 70%),
+    radial-gradient(ellipse 40% 50% at 5% 0%, rgb(233 196 106 / 0.18), transparent 70%),
+    radial-gradient(rgb(22 23 27 / 0.06) 1px, transparent 1px) 0 0 / 22px 22px,
+    var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .hero {
   display: grid;
   gap: var(--space-12);
   padding-block: var(--space-12) var(--space-16);
+}
+
+.heroText {
+  position: relative;
+  min-width: 0;
 }
 
 .eyebrow {
@@ -254,27 +268,58 @@
   flex-direction: column;
   gap: var(--space-1);
   height: 100%;
-  padding: var(--space-4);
+  overflow: hidden;
+  padding-bottom: var(--space-4);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
   background: var(--color-surface);
+  box-shadow: var(--shadow-soft);
   text-decoration: none;
-  transition: border-color var(--transition);
+  transition:
+    box-shadow 200ms ease,
+    transform 200ms ease;
 }
 
 .cat:hover {
-  border-color: var(--color-ink);
+  box-shadow: var(--shadow-lift);
+  transform: translateY(-3px);
 }
 
-.catIcon {
+.cat > :not(.catMedia) {
+  padding-inline: var(--space-4);
+}
+
+.catMedia {
   display: grid;
   place-items: center;
-  width: 48px;
-  height: 48px;
-  margin-bottom: var(--space-2);
-  border-radius: var(--radius-control);
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  margin-bottom: var(--space-3);
   background: var(--color-accent-soft);
   color: var(--color-accent);
+}
+
+.catMedia img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 300ms ease;
+}
+
+.cat:hover .catMedia img {
+  transform: scale(1.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cat,
+  .catMedia img {
+    transition: none;
+  }
+
+  .cat:hover,
+  .cat:hover .catMedia img {
+    transform: none;
+  }
 }
 
 .catName {
@@ -298,6 +343,12 @@
   }
 }
 
+/* Franja blanca para separar secciones */
+.band {
+  border-block: 1px solid var(--color-border);
+  background: var(--surface-warm);
+}
+
 /* Productos */
 .products {
   display: grid;
@@ -305,19 +356,23 @@
   gap: var(--space-4);
 }
 
-.products li {
+.products > li {
   display: flex;
 }
 
-.products li > * {
+.products > li > * {
   flex: 1;
 }
 
 /* Bloque oscuro de paquetes */
 .darkWrap {
-  margin-block: var(--space-8);
+  position: relative;
+  margin-bottom: var(--space-8);
   padding-block: var(--space-16);
-  background: var(--color-ink);
+  background:
+    radial-gradient(ellipse 50% 60% at 100% 0%, rgb(200 50 31 / 0.28), transparent 70%),
+    radial-gradient(rgb(255 255 255 / 0.05) 1px, transparent 1px) 0 0 / 24px 24px,
+    var(--color-ink);
   color: var(--color-on-dark);
 }
 
@@ -350,11 +405,11 @@
   gap: var(--space-4);
 }
 
-.packages li {
+.packages > li {
   display: flex;
 }
 
-.packages li > * {
+.packages > li > * {
   flex: 1;
 }
 
@@ -367,22 +422,37 @@
 }
 
 .step {
+  position: relative;
   padding: var(--space-6);
   border: 1px solid var(--color-border);
+  border-top: 4px solid var(--color-accent);
   border-radius: var(--radius-card);
   background: var(--color-surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.stepHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.stepIcon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-card);
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
 }
 
 .stepNum {
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  margin-bottom: var(--space-4);
-  border-radius: var(--radius-pill);
-  background: var(--color-ink);
-  color: var(--color-on-dark);
+  color: var(--color-border-input);
+  font-size: var(--text-3xl);
   font-weight: var(--weight-black);
+  line-height: 1;
 }
 
 .stepTitle {
@@ -405,7 +475,15 @@
   margin-top: var(--space-4);
   padding: var(--space-10) var(--space-8);
   border-radius: var(--radius-card-lg);
-  background: var(--color-accent);
+
+  /* Banner de contacto por WhatsApp: verde oscuro de la app (texto blanco con buen contraste). */
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 92% 18%, rgb(37 211 102 / 0.35) 0 90px, transparent 91px),
+    radial-gradient(circle at 8% 120%, rgb(255 255 255 / 0.08) 0 160px, transparent 161px),
+    linear-gradient(135deg, var(--color-whatsapp-dark), #0a6b60);
+  box-shadow: 0 18px 40px -18px rgb(7 94 84 / 0.6);
   color: var(--color-on-dark);
 }
 

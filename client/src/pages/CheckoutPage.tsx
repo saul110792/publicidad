@@ -450,7 +450,7 @@ export function CheckoutPage() {
             </p>
           )}
           <p className={styles.note}>
-            <Icon name="chat" size={18} />
+            <Icon name="whatsapp" size={20} className={styles.waIcon} />
             Recibirás la prueba digital por WhatsApp
           </p>
         </aside>

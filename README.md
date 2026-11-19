@@ -56,7 +56,9 @@ capture los precios reales. Todo el dinero se guarda en centavos.
 | ------------------- | --------------------------------------------------- |
 | `npm run dev`       | Levanta API y front juntos                          |
 | `npm run build`     | Compila front (`client/dist`) y API (`server/dist`) |
-| `npm run lint`      | ESLint (incluye reglas de accesibilidad)            |
+| `npm run lint`      | ESLint (incluye reglas de accesibilidad) y CSS      |
+| `npm run lint:css`  | stylelint + revisión de clases de CSS Modules       |
+| `npm run images`    | Regenera las ilustraciones de los productos         |
 | `npm run format`    | Prettier                                            |
 | `npm run typecheck` | TypeScript en los tres paquetes                     |
 | `npm test`          | Tests (Vitest)                                      |
@@ -276,3 +278,14 @@ Si activas GA4 o el Pixel, menciónalo en el aviso de privacidad.
   Al editar opciones se conservan sus ids, así no se rompen los carritos abiertos.
 - **Remarketing:** clientes cuyo último pedido fue suelto hace 15 días o más y que nunca compraron
   paquete, con el paquete más parecido y un mensaje de WhatsApp listo. Se descarga en CSV.
+
+## Imágenes y estilos
+
+- **Ilustraciones:** `client/public/img/productos/*.svg`, una por producto, generadas con
+  `npm run images` (`client/scripts/generate-illustrations.mjs`). Son propias, sin fotos de stock, y
+  usan los colores de la marca. Si un producto tiene fotos en el admin, la tienda usa las fotos.
+- **Validación de CSS:** `npm run lint:css` corre stylelint (config estándar) y un script que falla
+  si un componente usa una clase que no existe en su `.module.css` (se vería sin estilo) y avisa de
+  clases que nadie usa. Va incluido en `npm run lint`.
+- **WhatsApp:** todo lo que abre WhatsApp usa sus colores (`--color-whatsapp*` en `tokens.css`, variante
+  `whatsapp` del botón). El texto del botón es oscuro: blanco sobre `#25D366` no tiene contraste.

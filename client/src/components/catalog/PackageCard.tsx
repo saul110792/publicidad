@@ -3,6 +3,7 @@ import { track } from '../../lib/analytics';
 import { giroLabel, price } from '../../lib/format';
 import { useNavigate } from 'react-router';
 import { cart } from '../../features/cart/cartStore';
+import { illustrationFor } from '../../config/productImages';
 import { Button } from '../ui/Button';
 import { Icon } from '../ui/Icon';
 import styles from './PackageCard.module.css';
@@ -16,6 +17,12 @@ type Props = {
 export function PackageCard({ pkg, tone = 'light', headingLevel = 'h3' }: Props) {
   const Heading = headingLevel;
   const navigate = useNavigate();
+  // Hasta 3 ilustraciones de sus componentes, encimadas como collage.
+  const collage = [
+    ...new Set(
+      pkg.items.map((it) => illustrationFor(it.productSlug)).filter((x): x is string => !!x),
+    ),
+  ].slice(0, 3);
   const ahorro =
     pkg.precio != null && pkg.precioSeparado != null && pkg.precioSeparado > pkg.precio
       ? pkg.precioSeparado - pkg.precio
@@ -27,6 +34,21 @@ export function PackageCard({ pkg, tone = 'light', headingLevel = 'h3' }: Props)
         pkg.recomendado ? styles.recommended : ''
       }`}
     >
+      {collage.length > 0 && (
+        <div className={styles.collage} aria-hidden="true">
+          {collage.map((src) => (
+            <img
+              key={src}
+              src={src}
+              alt=""
+              width={400}
+              height={300}
+              loading="lazy"
+              decoding="async"
+            />
+          ))}
+        </div>
+      )}
       {pkg.recomendado && <p className={styles.badge}>Recomendado para empezar</p>}
       <p className={styles.giro}>{giroLabel(pkg.giro)}</p>
       <Heading className={styles.name}>Paquete {pkg.nombre}</Heading>
