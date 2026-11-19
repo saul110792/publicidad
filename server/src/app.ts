@@ -1,7 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import { allowedOrigins } from './config/env';
+import { allowedOrigins, serveClient as shouldServeClient } from './config/env';
+import { findClientDist, serveClient } from './middleware/client';
 import { errorHandler, notFound } from './middleware/errors';
 import { catalogRouter } from './routes/catalog';
 import { ordersRouter } from './routes/orders';
@@ -13,7 +14,8 @@ export function createApp() {
   const app = express();
 
   app.set('trust proxy', 1); // Render corre detrás de un proxy
-  app.use(helmet());
+  // same-origin-allow-popups: "Cotizar por WhatsApp" abre una ventana y luego le pone la URL.
+  app.use(helmet({ crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' } }));
   app.use(cors({ origin: allowedOrigins, credentials: true }));
   app.use(express.json({ limit: '1mb' }));
 
@@ -28,6 +30,13 @@ export function createApp() {
   app.use('/api', eventsRouter);
 
   app.use('/api', notFound);
+
+  if (shouldServeClient) {
+    const dist = findClientDist();
+    if (dist) serveClient(app, dist);
+    else console.warn('SERVE_CLIENT activo pero no existe client/dist: corre npm run build.');
+  }
+
   app.use(errorHandler);
 
   return app;

@@ -26,6 +26,8 @@ const schema = z.object({
   MP_WEBHOOK_SECRET: z.preprocess(emptyToUndefined, z.string().optional()),
   /** URL pública https de la API, para que Mercado Pago mande los webhooks. */
   API_PUBLIC_URL: z.preprocess(emptyToUndefined, z.url().optional()),
+  /** Servir client/dist desde la API. Por defecto: sí en producción, no en desarrollo. */
+  SERVE_CLIENT: z.preprocess(emptyToUndefined, z.enum(['true', 'false']).optional()),
 });
 
 function emptyToUndefined(v: unknown) {
@@ -34,9 +36,14 @@ function emptyToUndefined(v: unknown) {
 
 // API_PORT (local) tiene prioridad sobre PORT (Render). Así el server no choca con Vite
 // cuando alguna herramienta exporta PORT para el front.
+// En Render, RENDER_EXTERNAL_URL (https://<servicio>.onrender.com) sirve de respaldo para la URL
+// pública: el front y la API viven en el mismo servicio.
+const renderUrl = process.env.RENDER_EXTERNAL_URL;
 const parsed = schema.safeParse({
   ...process.env,
   PORT: process.env.API_PORT ?? process.env.PORT,
+  CLIENT_URL: process.env.CLIENT_URL || renderUrl,
+  API_PUBLIC_URL: process.env.API_PUBLIC_URL || renderUrl,
 });
 
 if (!parsed.success) {
@@ -45,6 +52,10 @@ if (!parsed.success) {
 }
 
 export const env = parsed.data;
+
+export const serveClient = env.SERVE_CLIENT
+  ? env.SERVE_CLIENT === 'true'
+  : env.NODE_ENV === 'production';
 
 export const allowedOrigins = env.CLIENT_URL.split(',').map((o) => o.trim());
 

@@ -1,7 +1,8 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: ['src/index.ts'],
+  // index: la API; migrate y seed: se corren al arrancar en Render (sin tsx).
+  entry: { index: 'src/index.ts', migrate: 'src/db/migrate.ts', seed: 'src/db/seed.ts' },
   format: ['esm'],
   platform: 'node',
   target: 'node22',

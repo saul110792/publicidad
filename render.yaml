@@ -1,0 +1,68 @@
+# Blueprint de Render: un web service (API + front compilado) y una base PostgreSQL.
+# En Render: New > Blueprint > elige este repositorio. Te pedirá las variables con `sync: false`.
+#
+# Planes: van en "free" para probar sin costo. Ojo: el web service gratis se duerme tras
+# ~15 min sin visitas (la primera carga tarda) y la base gratis vence a los 30 días.
+# Para producción cambia a `plan: starter` (web) y `plan: basic-256mb` (BD) antes de aplicar.
+
+databases:
+  - name: publicidad-db
+    databaseName: publicidad
+    user: publicidad
+    plan: free
+    postgresMajorVersion: '17'
+    ipAllowList: [] # solo conexiones internas de Render
+
+services:
+  - type: web
+    name: publicidad
+    runtime: node
+    plan: free
+    region: oregon
+    # --include=dev: TypeScript, Vite y tsup se necesitan para compilar.
+    buildCommand: npm ci --include=dev && npm run build
+    # Aplica migraciones, carga el catálogo inicial si la BD está vacía y arranca.
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: '22'
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: publicidad-db
+          property: connectionString
+      # Para firmar la sesión del admin (Fase 7). Render genera un valor aleatorio.
+      - key: SESSION_SECRET
+        generateValue: true
+
+      # --- Las siguientes las capturas tú (puedes dejarlas vacías y llenarlas después) ---
+      # Correo y contraseña del primer admin (se crea al arrancar si no existe).
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      # WhatsApp del negocio con lada de país, solo dígitos (ej. 5215512345678).
+      # Es VITE_*: se usa al compilar, cambiarlo requiere un nuevo deploy.
+      - key: VITE_WHATSAPP_NUMBER
+        sync: false
+      - key: VITE_GA4_ID
+        sync: false
+      - key: VITE_META_PIXEL_ID
+        sync: false
+      # Mercado Pago. Sin token, el pago con tarjeta se coordina por WhatsApp.
+      - key: MP_ACCESS_TOKEN
+        sync: false
+      - key: MP_WEBHOOK_SECRET
+        sync: false
+      # cloudinary://API_KEY:API_SECRET@CLOUD_NAME. Sin él, el archivo se manda por WhatsApp.
+      - key: CLOUDINARY_URL
+        sync: false
+      # Envío a domicilio en centavos (15000 = $150). Vacío = "por confirmar".
+      - key: SHIPPING_COST
+        sync: false
+      # Si conectas un dominio propio, pon aquí https://tudominio.com (si no, se usa el de Render).
+      - key: CLIENT_URL
+        sync: false

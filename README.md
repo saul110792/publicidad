@@ -92,9 +92,32 @@ Cloudinary puede permitir menos por archivo.
 - [ ] 7. Admin y dashboard
 - [ ] 8. Deploy en Render
 
-## Deploy
+## Deploy en Render (Blueprint)
 
-Se documenta en la Fase 8.
+El repo trae `render.yaml`: **un web service** que sirve la API y el front compilado, y **una base
+PostgreSQL**. Front y API en el mismo dominio: sin CORS y con cookies del mismo sitio para el admin.
+
+1. En Render: **New > Blueprint** y elige este repositorio.
+2. Render te pide las variables marcadas `sync: false` (WhatsApp, Mercado Pago, Cloudinary, GA4,
+   Pixel, envío, admin). Puedes dejarlas vacías y llenarlas después en _Environment_.
+3. **Apply**. En cada deploy:
+   - build: `npm ci --include=dev && npm run build` (front en `client/dist`, API en `server/dist`);
+   - arranque (`npm start`): aplica migraciones, carga el catálogo inicial **solo si la BD está
+     vacía** y levanta el servidor en el `PORT` que asigna Render.
+4. Si cambias una variable `VITE_*` (WhatsApp, GA4, Pixel), haz **Manual Deploy**: se usan al
+   compilar.
+
+Notas:
+
+- **Planes:** el Blueprint usa `free`. El web service gratis se duerme tras ~15 min sin visitas y
+  la BD gratis vence a los 30 días. Para producción usa `starter` y `basic-256mb`.
+- **URL pública:** se toma de `RENDER_EXTERNAL_URL`. Con dominio propio, pon `CLIENT_URL`.
+- **Mercado Pago:** el webhook es
+  `https://<tu-servicio>.onrender.com/api/payments/webhook/mercadopago`; regístralo en el panel
+  (evento _Pagos_) y copia la clave secreta a `MP_WEBHOOK_SECRET`.
+- **BD:** `DATABASE_URL` es la URL interna (sin SSL). Con la externa se activa SSL solo.
+- **Probar el build de producción en local:** `npm run build` y luego
+  `NODE_ENV=production API_PORT=3100 CLIENT_URL=http://localhost:3100 npm start`.
 
 ## Cómo se calcula el precio
 

@@ -388,6 +388,17 @@ const SERVICES = [
 ];
 
 async function main() {
+  // --if-empty: solo carga el catálogo si la BD está vacía (lo usa el arranque en Render).
+  if (process.argv.includes('--if-empty')) {
+    const [{ n }] = (await db.select({ n: sql<number>`count(*)::int` }).from(categories)) as [
+      { n: number },
+    ];
+    if (n > 0) {
+      console.log('El catálogo ya existe: no se carga el seed.');
+      return;
+    }
+  }
+
   const [{ count }] = (await db.select({ count: sql<number>`count(*)::int` }).from(orders)) as [
     { count: number },
   ];
