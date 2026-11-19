@@ -28,6 +28,11 @@ const schema = z.object({
   API_PUBLIC_URL: z.preprocess(emptyToUndefined, z.url().optional()),
   /** Servir client/dist desde la API. Por defecto: sí en producción, no en desarrollo. */
   SERVE_CLIENT: z.preprocess(emptyToUndefined, z.enum(['true', 'false']).optional()),
+  /** Firma la cookie de sesión del admin. Obligatoria en producción (Render la genera). */
+  SESSION_SECRET: z.preprocess(emptyToUndefined, z.string().min(32).optional()),
+  /** Primer admin: se crea al arrancar si no existe ese correo. */
+  ADMIN_EMAIL: z.preprocess(emptyToUndefined, z.email().optional()),
+  ADMIN_PASSWORD: z.preprocess(emptyToUndefined, z.string().min(10).optional()),
 });
 
 function emptyToUndefined(v: unknown) {

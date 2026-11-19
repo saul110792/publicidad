@@ -8,10 +8,14 @@ import { CheckoutPage } from './pages/CheckoutPage';
 import { OrderConfirmPage } from './pages/OrderConfirmPage';
 import { MockPaymentPage } from './pages/MockPaymentPage';
 import { InfoPage } from './pages/InfoPage';
-import { AdminPage } from './pages/AdminPage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { AdminRoute } from './admin/AdminRoute';
 
 export const router = createBrowserRouter([
+  {
+    path: '/admin/*',
+    element: <AdminRoute />,
+  },
   {
     element: <Layout />,
     children: [
@@ -27,7 +31,6 @@ export const router = createBrowserRouter([
       { path: '/preparar-archivo', element: <InfoPage title="Cómo preparar tu archivo" /> },
       { path: '/tiempos-de-entrega', element: <InfoPage title="Tiempos de entrega" /> },
       { path: '/aviso-de-privacidad', element: <InfoPage title="Aviso de privacidad" /> },
-      { path: '/admin/*', element: <AdminPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

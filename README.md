@@ -89,7 +89,7 @@ Cloudinary puede permitir menos por archivo.
 - [x] 4. Carrito, checkout y oferta de paquete
 - [x] 5. Pagos
 - [x] 6. Medición
-- [ ] 7. Admin y dashboard
+- [x] 7. Admin y dashboard
 - [ ] 8. Deploy en Render
 
 ## Deploy en Render (Blueprint)
@@ -205,3 +205,24 @@ clic, valen 30 días) y viajan en los leads de WhatsApp, los pedidos y los event
 impresos apunta a `/?utm_source=qr&utm_campaign=pedido-{folio}`.
 
 Si activas GA4 o el Pixel, menciónalo en el aviso de privacidad.
+
+## Panel de admin (`/admin`)
+
+- **Acceso:** correo y contraseña. El primer admin se crea al arrancar con `ADMIN_EMAIL` y
+  `ADMIN_PASSWORD` (si ese correo no existe). Para crear otro o cambiar una contraseña en local:
+  `ADMIN_PASSWORD=... npm run admin:password -w @publicidad/server -- correo@ejemplo.com`.
+- **Sesión:** cookie `HttpOnly`, `SameSite=Lax` y `Secure` en producción, firmada con
+  `SESSION_SECRET` (dura 12 horas). Tras 5 intentos fallidos se bloquea 15 minutos. Las peticiones
+  que modifican datos revisan además el `Origin`.
+- **Dashboard:** ventas, ticket promedio, ventas por canal (UTM) y por "¿cómo nos conociste?",
+  embudo por sesiones (producto → cotización → carrito → checkout → compra), conversión a paquete
+  (ofertas mostradas vs. aceptadas y clientes que pasaron de compra suelta a paquete), productos de
+  entrada que más llevan a paquete y leads de WhatsApp vs. convertidos.
+- **Pedidos:** lista con filtros, cambio de estado (nuevo → … → entregado) y de pago (para marcar
+  transferencias y pagos en tienda), QR del pedido para el impreso y **venta manual** para lo que se
+  cierra por WhatsApp. Al capturar el código del mensaje (ej. `TJ-4F2A`), el lead queda ligado.
+- **Catálogo:** productos con precio base, escalas por cantidad y opciones del cotizador con su
+  costo (vacío = "por confirmar"); paquetes y sus componentes; categorías y servicios mensuales.
+  Al editar opciones se conservan sus ids, así no se rompen los carritos abiertos.
+- **Remarketing:** clientes cuyo último pedido fue suelto hace 15 días o más y que nunca compraron
+  paquete, con el paquete más parecido y un mensaje de WhatsApp listo. Se descarga en CSV.

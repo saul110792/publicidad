@@ -8,6 +8,7 @@ import { catalogRouter } from './routes/catalog';
 import { ordersRouter } from './routes/orders';
 import { paymentsRouter } from './routes/payments';
 import { eventsRouter } from './routes/events';
+import { adminRouter } from './routes/admin';
 import { quoteRouter } from './routes/quote';
 
 export function createApp() {
@@ -28,6 +29,7 @@ export function createApp() {
   app.use('/api', ordersRouter);
   app.use('/api', paymentsRouter);
   app.use('/api', eventsRouter);
+  app.use('/api/admin', adminRouter);
 
   app.use('/api', notFound);
 

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { asc, eq, sql } from 'drizzle-orm';
+import { asc, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import {
   anticipoDe,
@@ -17,9 +17,9 @@ import { db } from '../db/client';
 import { customers, orderItems, orders, packages, products } from '../db/schema';
 import { HttpError } from '../middleware/errors';
 import { buildOffer, priceLines, quoteCart, shippingCost } from '../services/cart';
-import { FOLIO_PATTERN, generateFolio } from '../services/folio';
+import { FOLIO_PATTERN } from '../services/folio';
+import { insertOrder, upsertCustomer } from '../services/orderStore';
 import { canPayOnline, startCheckout } from '../services/payments';
-import { isUniqueViolation } from '../services/refCode';
 import { cloudinary, uploadSignature } from '../services/uploads';
 import { parse, selectionSchema, slugSchema, utmSchema } from '../services/validation';
 
@@ -107,11 +107,6 @@ const orderBody = z
     path: ['direccion'],
   });
 
-/** Guarda el WhatsApp como 10 dígitos para que el mismo cliente no se duplique. */
-export function normalizeWhatsapp(digits: string): string {
-  return digits.slice(-10);
-}
-
 // --- Rutas ---
 
 ordersRouter.post('/cart', async (req, res) => {
@@ -145,73 +140,42 @@ ordersRouter.post('/orders', async (req, res) => {
   const subtotal = sumOrNull(lines.map((l) => l.total));
   const envio = input.entrega === 'recoger' ? 0 : shippingCost();
   const total = sumOrNull([subtotal, envio]);
-  const whatsapp = normalizeWhatsapp(input.cliente.whatsapp);
 
-  const folio = await db.transaction(async (tx) => {
-    const [customer] = await tx
-      .insert(customers)
-      .values({
-        nombre: input.cliente.nombre,
-        whatsapp,
-        correo: input.cliente.correo,
-        giro: input.cliente.giro,
-        origen: input.comoNosConocio,
-      })
-      .onConflictDoUpdate({
-        target: customers.whatsapp,
-        set: {
-          nombre: input.cliente.nombre,
-          correo: sql`coalesce(excluded.correo, ${customers.correo})`,
-          giro: sql`coalesce(excluded.giro, ${customers.giro})`,
-          origen: sql`coalesce(${customers.origen}, excluded.origen)`,
-        },
-      })
-      .returning({ id: customers.id });
-
-    for (let attempt = 0; attempt < 5; attempt++) {
-      const folio = generateFolio();
-      try {
-        // Savepoint: si el folio choca, solo se revierte este intento.
-        return await tx.transaction(async (sp) => {
-          const [order] = await sp
-            .insert(orders)
-            .values({
-              folio,
-              customerId: customer!.id,
-              subtotal,
-              envio,
-              total,
-              metodoPago: input.metodoPago,
-              entrega: input.entrega,
-              direccion: input.entrega === 'domicilio' ? input.direccion : null,
-              comoNosConocio: input.comoNosConocio,
-              utmSource: input.utm?.source,
-              utmMedium: input.utm?.medium,
-              utmCampaign: input.utm?.campaign,
-              packageUpgrade: lines.some((l) => l.desdeOferta),
-            })
-            .returning({ id: orders.id });
-
-          await sp.insert(orderItems).values(
-            lines.map((l) => ({
-              orderId: order!.id,
-              tipo: l.tipo,
-              productId: l.productId,
-              packageId: l.packageId,
-              opciones: { nombre: l.nombre, detalle: l.detalle, ...l.opcionesJson },
-              cantidad: l.cantidad,
-              precioUnitario: l.precioUnitario,
-              total: l.total,
-              archivoUrl: l.archivo?.url ?? null,
-            })),
-          );
-          return folio;
-        });
-      } catch (err) {
-        if (!isUniqueViolation(err)) throw err;
-      }
-    }
-    throw new HttpError(503, 'No pudimos generar el folio, intenta de nuevo.');
+  const { folio } = await db.transaction(async (tx) => {
+    const customerId = await upsertCustomer(tx, {
+      nombre: input.cliente.nombre,
+      whatsapp: input.cliente.whatsapp,
+      correo: input.cliente.correo,
+      giro: input.cliente.giro,
+      origen: input.comoNosConocio,
+    });
+    return insertOrder(
+      tx,
+      {
+        customerId,
+        subtotal,
+        envio,
+        total,
+        metodoPago: input.metodoPago,
+        entrega: input.entrega,
+        direccion: input.entrega === 'domicilio' ? input.direccion : null,
+        comoNosConocio: input.comoNosConocio,
+        utmSource: input.utm?.source,
+        utmMedium: input.utm?.medium,
+        utmCampaign: input.utm?.campaign,
+        packageUpgrade: lines.some((l) => l.desdeOferta),
+      },
+      lines.map((l) => ({
+        tipo: l.tipo,
+        productId: l.productId,
+        packageId: l.packageId,
+        opciones: { nombre: l.nombre, detalle: l.detalle, ...l.opcionesJson },
+        cantidad: l.cantidad,
+        precioUnitario: l.precioUnitario,
+        total: l.total,
+        archivoUrl: l.archivo?.url ?? null,
+      })),
+    );
   });
 
   // Con tarjeta y total definido se crea el checkout. Si falla, el pedido ya existe y la

@@ -48,6 +48,7 @@ export function findBestOffer(
   lines: MatchLine[],
   pkgs: MatchPackage[],
   excluded: Iterable<string> = [],
+  minCovered = MIN_COVERED,
 ): PackageMatch | null {
   const skip = new Set(excluded);
   let best: { match: PackageMatch; pkg: MatchPackage } | null = null;
@@ -55,7 +56,7 @@ export function findBestOffer(
   for (const pkg of pkgs) {
     if (skip.has(pkg.slug) || !pkg.items.length) continue;
     const match = matchPackage(lines, pkg);
-    if (match.covered.length < MIN_COVERED) continue;
+    if (match.covered.length < minCovered) continue;
     if (!best || isBetter(match, pkg, best.match, best.pkg)) best = { match, pkg };
   }
   return best?.match ?? null;

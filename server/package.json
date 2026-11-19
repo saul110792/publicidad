@@ -14,7 +14,8 @@
     "db:migrate": "tsx src/db/migrate.ts",
     "db:seed": "tsx src/db/seed.ts",
     "db:studio": "drizzle-kit studio",
-    "start:prod": "node dist/migrate.js && node dist/seed.js --if-empty && node dist/index.js"
+    "start:prod": "node dist/migrate.js && node dist/seed.js --if-empty && node dist/index.js",
+    "admin:password": "tsx scripts/admin-password.ts"
   },
   "dependencies": {
     "@publicidad/shared": "*",

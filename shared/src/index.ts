@@ -4,3 +4,4 @@ export * from './catalog';
 export * from './quote';
 export * from './cart';
 export * from './analytics';
+export * from './admin';
