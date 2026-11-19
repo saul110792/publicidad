@@ -69,7 +69,7 @@ Ver `server/.env.example` y `client/.env.example`. Los archivos `.env` nunca se 
 
 - [x] 1. Setup: monorepo, lint, prettier, env, tokens de diseño y layout base
 - [x] 2. Catálogo estático (Inicio, Catálogo, Paquetes) con seed en BD
-- [ ] 3. Cotizador y WhatsApp con `ref_code`
+- [x] 3. Cotizador y WhatsApp con `ref_code`
 - [ ] 4. Carrito, checkout y oferta de paquete
 - [ ] 5. Pagos
 - [ ] 6. Medición
@@ -79,3 +79,14 @@ Ver `server/.env.example` y `client/.env.example`. Los archivos `.env` nunca se 
 ## Deploy
 
 Se documenta en la Fase 8.
+
+## Cómo se calcula el precio
+
+El cálculo vive solo en el back (`server/src/services/pricing.ts`); el front muestra lo que responde `POST /api/quote`.
+
+1. Cantidad: la opción del grupo `cantidad` o la cantidad mínima del producto.
+2. Precio unitario: la escala (`price_tiers`) más alta que no supere la cantidad; si no hay, `precio_base`.
+3. Opciones: `por_unidad` suma × cantidad, `fijo` suma una vez y `porcentaje` se aplica al final.
+4. Si falta cualquier precio (base u opción elegida), el total es `null` y la UI muestra `$[PRECIO]`.
+
+Cada clic en "Cotizar por WhatsApp" crea un `lead` con un código como `TJ-4F2A`, que va dentro del mensaje.

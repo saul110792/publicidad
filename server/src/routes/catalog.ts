@@ -36,7 +36,7 @@ async function getCategories(): Promise<CategoryDTO[]> {
   return rows;
 }
 
-const productCardFields = {
+export const productCardFields = {
   slug: products.slug,
   nombre: products.nombre,
   descripcion: products.descripcion,
@@ -51,7 +51,7 @@ const productCardFields = {
   catNombre: categories.nombre,
 };
 
-type ProductRow = {
+export type ProductRow = {
   slug: string;
   nombre: string;
   descripcion: string | null;
@@ -66,7 +66,7 @@ type ProductRow = {
   catNombre: string;
 };
 
-function toProductCard(r: ProductRow): ProductCardDTO {
+export function toProductCard(r: ProductRow): ProductCardDTO {
   return {
     slug: r.slug,
     nombre: r.nombre,
@@ -123,10 +123,13 @@ async function getProducts(q: ProductQuery, limit = 200): Promise<ProductCardDTO
   return rows.map(toProductCard);
 }
 
-async function getPackages(opts: { giro?: string; soloDestacados?: boolean } = {}) {
+export async function getPackages(
+  opts: { giro?: string; soloDestacados?: boolean; ids?: number[] } = {},
+) {
   const conds: SQL[] = [eq(packages.activo, true)];
   if (opts.giro) conds.push(or(eq(packages.giro, opts.giro), isNull(packages.giro))!);
   if (opts.soloDestacados) conds.push(eq(packages.destacado, true));
+  if (opts.ids) conds.push(inArray(packages.id, opts.ids.length ? opts.ids : [-1]));
 
   const pkgs = await db
     .select()

@@ -1,0 +1,68 @@
+.drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-6) var(--space-4);
+  border: 2px dashed var(--color-border-input);
+  border-radius: var(--radius-card);
+  background: var(--color-bg);
+  color: var(--color-text-2);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color var(--transition);
+}
+
+.drop:hover {
+  border-color: var(--color-ink);
+}
+
+/* El input está oculto: el foco se muestra en la zona visible. */
+input:focus-visible + .drop,
+.drop:has(+ input:focus-visible) {
+  border-color: var(--color-accent);
+  box-shadow: var(--focus-ring);
+}
+
+.dropTitle {
+  color: var(--color-ink);
+  font-weight: var(--weight-bold);
+}
+
+.hint {
+  font-size: var(--text-xs);
+}
+
+.selected {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-card);
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
+}
+
+.fileName {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: var(--weight-semibold);
+}
+
+.remove {
+  min-height: var(--tap);
+  padding-inline: var(--space-2);
+  color: var(--color-ink);
+  font-weight: var(--weight-bold);
+  text-decoration: underline;
+}
+
+.error {
+  margin-top: var(--space-2);
+  color: var(--color-accent-hover);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+}

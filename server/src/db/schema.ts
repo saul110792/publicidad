@@ -75,6 +75,8 @@ export const products = pgTable(
       .notNull()
       .default(sql`'{}'::text[]`),
     popularidad: integer('popularidad').notNull().default(0),
+    /** Prefijo del código de referencia de WhatsApp, ej. "TJ" → TJ-4F2A. */
+    refPrefijo: text('ref_prefijo'),
   },
   (t) => [index('products_category_idx').on(t.categoryId)],
 );
@@ -96,8 +98,11 @@ export const options = pgTable('options', {
     .notNull()
     .references(() => optionGroups.id, { onDelete: 'cascade' }),
   label: text('label').notNull(),
-  /** Centavos (fijo / por_unidad) o puntos porcentuales (porcentaje). */
-  modificador: integer('modificador').notNull().default(0),
+  /**
+   * Centavos (fijo / por_unidad) o puntos porcentuales (porcentaje).
+   * NULL = el negocio aún no define el costo de esta opción; la cotización queda "por confirmar".
+   */
+  modificador: integer('modificador'),
   tipoModificador: modifierType('tipo_modificador').notNull().default('fijo'),
   /** Para el grupo "cantidad": número de piezas que representa la opción. */
   valorCantidad: integer('valor_cantidad'),

@@ -4,13 +4,20 @@
  */
 export type Centavos = number;
 
-const mxn = new Intl.NumberFormat('es-MX', {
+const whole = new Intl.NumberFormat('es-MX', {
   style: 'currency',
   currency: 'MXN',
-  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+});
+
+const cents = new Intl.NumberFormat('es-MX', {
+  style: 'currency',
+  currency: 'MXN',
+  minimumFractionDigits: 2,
   maximumFractionDigits: 2,
 });
 
+/** $1,150 si son pesos cerrados; $2.30 si hay centavos (nunca "$2.3"). */
 export function formatMXN(centavos: Centavos): string {
-  return mxn.format(centavos / 100);
+  return (centavos % 100 === 0 ? whole : cents).format(centavos / 100);
 }

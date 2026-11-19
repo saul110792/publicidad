@@ -7,7 +7,17 @@
  */
 import { sql } from 'drizzle-orm';
 import { db, pool } from './client';
-import { categories, orders, packageItems, packages, products, recurringServices } from './schema';
+import {
+  categories,
+  optionGroups,
+  options,
+  orders,
+  packageItems,
+  packages,
+  products,
+  recurringServices,
+} from './schema';
+import { OPTION_SETS, REF_PREFIX } from './seed-options';
 
 type ProductSeed = {
   slug: string;
@@ -286,7 +296,8 @@ const PACKAGES: PackageSeed[] = [
         product: 'lonas',
         etiqueta: 'Lona 2×1 m',
         cantidad: 2,
-        opciones: { medida: '2×1 m' },
+        // clave del grupo → label de la opción (se usa en la Fase 4 al cambiar a paquete)
+        opciones: { cantidad: '2 × 1 m' },
       },
       { product: 'google-maps', etiqueta: 'Alta en Google Maps', cantidad: 1 },
     ],
@@ -405,10 +416,37 @@ async function main() {
         PRODUCTS.map(({ cat, ...p }) => ({
           ...p,
           categoryId: catId.get(cat)!,
+          refPrefijo: REF_PREFIX[p.slug] ?? null,
         })),
       )
       .returning({ id: products.id, slug: products.slug });
     const prodId = new Map(prods.map((p) => [p.slug, p.id]));
+
+    // Grupos de opciones del cotizador (ver seed-options.ts para la regla de precios).
+    let totalOpciones = 0;
+    for (const [slug, groups] of Object.entries(OPTION_SETS)) {
+      const productId = prodId.get(slug);
+      if (!productId) throw new Error(`Opciones para producto desconocido: ${slug}`);
+      for (const [gi, g] of groups.entries()) {
+        const [group] = await tx
+          .insert(optionGroups)
+          .values({ productId, nombre: g.nombre, clave: g.clave, orden: gi })
+          .returning({ id: optionGroups.id });
+        await tx.insert(options).values(
+          g.opciones.map((o, oi) => ({
+            groupId: group!.id,
+            label: o.label,
+            valorCantidad: o.valorCantidad,
+            tipoModificador: o.tipo ?? g.tipo ?? 'fijo',
+            modificador: o.base || oi === 0 ? 0 : null,
+            esDefault: oi === 0,
+            orden: oi,
+          })),
+        );
+        totalOpciones += g.opciones.length;
+      }
+    }
+    console.log(`Opciones del cotizador: ${totalOpciones}.`);
 
     for (const [i, { items, ...pkg }] of PACKAGES.entries()) {
       const [created] = await tx
