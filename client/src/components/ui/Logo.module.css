@@ -1,0 +1,31 @@
+.logo {
+  display: inline-flex;
+  align-items: baseline;
+  color: var(--color-ink);
+  font-size: 1.375rem;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.strong {
+  font-weight: var(--weight-bold);
+}
+
+.slash {
+  margin-inline: 0.04em;
+  color: var(--color-gold);
+  font-weight: var(--weight-regular);
+}
+
+.light {
+  font-weight: var(--weight-regular);
+}
+
+.dark {
+  color: #f5f0e6;
+}
+
+.dark .slash {
+  color: var(--color-accent-on-dark);
+}

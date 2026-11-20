@@ -4,8 +4,8 @@
 const whatsappNumber = (import.meta.env.VITE_WHATSAPP_NUMBER ?? '').replace(/\D/g, '');
 
 export const site = {
-  brand: '[TU MARCA]',
-  tagline: 'Imprenta y publicidad para negocios',
+  brand: 'Ventas Medibles',
+  tagline: 'Crecimiento comercial basado en resultados',
   whatsappNumber,
   whatsappDisplay: whatsappNumber || '[TU NÚMERO]',
   deliveryTime: '[TIEMPO DE ENTREGA]',
@@ -24,8 +24,10 @@ export const categories = [
 ];
 
 export const mainNav = [
-  { to: '/productos', label: 'Productos' },
+  { to: '/#servicios', label: 'Servicios' },
+  { to: '/#metodo', label: 'Método' },
+  { to: '/diagnostico', label: 'Diagnóstico' },
+  { to: '/productos', label: 'Tienda' },
   { to: '/paquetes', label: 'Paquetes' },
-  { to: '/#como-funciona', label: 'Cómo funciona' },
   { to: '#contacto', label: 'Contacto' },
 ];

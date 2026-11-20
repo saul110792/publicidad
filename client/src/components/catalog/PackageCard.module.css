@@ -67,11 +67,11 @@
 }
 
 .dark .collage {
-  background: #2b2c32;
+  background: #2c3646;
 }
 
 .dark .collage img {
-  border-color: #3a3b42;
+  border-color: #3a4558;
 }
 
 .recommended {
@@ -80,7 +80,7 @@
 
 .dark {
   border-color: var(--color-dark-border);
-  background: linear-gradient(180deg, #25262d, #1d1e23);
+  background: linear-gradient(180deg, #283141, #1b222d);
   color: var(--color-on-dark);
   box-shadow: 0 20px 40px -24px rgb(0 0 0 / 0.7);
 }

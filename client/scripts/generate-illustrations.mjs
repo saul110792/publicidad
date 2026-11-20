@@ -13,10 +13,10 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.resolve(here, '../public/img/productos');
 
 const C = {
-  ink: '#16171B',
-  ink2: '#2B2C32',
-  red: '#C8321F',
-  redSoft: '#F7E3DE',
+  ink: '#1F2733',
+  ink2: '#2C3646',
+  red: '#B98A55',
+  redSoft: '#F3E8D9',
   paper: '#FFFFFF',
   cream: '#F5F3EE',
   line: '#DDD9D0',
@@ -28,8 +28,8 @@ const C = {
 
 /** Fondo por categoría: degradado suave + dos círculos decorativos. */
 const BG = {
-  impresos: ['#F6E7DD', '#EFD8C8'],
-  'gran-formato': ['#E3EAF1', '#CFDBE7'],
+  impresos: ['#F4EBDD', '#E9D9C2'],
+  'gran-formato': ['#E2E9F0', '#C9D6E3'],
   promocionales: ['#F1E8D6', '#E6D6B6'],
   'identidad-de-marca': ['#ECE4F0', '#DCCDE6'],
   digital: ['#E2F0E8', '#CBE3D5'],
@@ -42,8 +42,8 @@ function svg(cat, body) {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
 <defs>
 <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient>
-<filter id="sh" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="14" stdDeviation="14" flood-color="#16171B" flood-opacity=".18"/></filter>
-<filter id="sh2" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#16171B" flood-opacity=".16"/></filter>
+<filter id="sh" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="14" stdDeviation="14" flood-color="#1F2733" flood-opacity=".18"/></filter>
+<filter id="sh2" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#1F2733" flood-opacity=".16"/></filter>
 </defs>
 <rect width="800" height="600" fill="url(#bg)"/>
 <circle cx="690" cy="90" r="150" fill="#fff" opacity=".28"/>

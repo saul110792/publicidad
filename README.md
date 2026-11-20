@@ -1,6 +1,8 @@
-# [TU MARCA] · Imprenta y publicidad
+# Ventas Medibles · Crecimiento comercial basado en resultados
 
-Sitio para vender publicidad e impresos a negocios pequeños: cotizador en línea, carrito, oferta de paquetes por giro y medición del embudo de venta.
+Sitio de Ventas Medibles: consultoría de crecimiento con honorario ligado a la utilidad incremental (Inicio, `/diagnostico`) y, como actividad complementaria, una tienda de publicidad con cotizador en línea, carrito, paquetes por giro y medición del embudo de venta.
+
+Los textos de la consultoría salen del plan de negocios y viven en `client/src/config/consulting.ts`. La identidad (azul marino `#1F2733`, dorado `#B98A55` y los acentos del plan) está en `client/src/styles/tokens.css`; el logotipo es el componente `Logo`.
 
 ## Stack
 
@@ -130,8 +132,8 @@ Notas:
 - [ ] **Admin:** `ADMIN_EMAIL` y una `ADMIN_PASSWORD` larga. `SESSION_SECRET` lo genera Render.
 - [ ] **Precios:** capturar en `/admin/productos` el precio base, las escalas y el costo de cada
       opción, y el precio de cada paquete y servicio. La lista marca lo que falta.
-- [ ] **Datos del negocio** en `client/src/config/site.ts`: marca, horario, dirección, cobertura,
-      tiempo de entrega y correo (hoy son placeholders como `[TU MARCA]`).
+- [ ] **Datos del negocio** en `client/src/config/site.ts`: horario, dirección, cobertura,
+      tiempo de entrega y correo (hoy son placeholders como `[HORARIO]`).
 - [ ] **WhatsApp:** `VITE_WHATSAPP_NUMBER` con lada (ej. `5215512345678`) y **Manual Deploy**.
 - [ ] **Textos pendientes:** factura y política de cambios en `/faq`; razón social, domicilio y
       fecha en `/aviso-de-privacidad`. **El aviso es una plantilla: que lo revise un abogado.**

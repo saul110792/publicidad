@@ -2,10 +2,18 @@ import { Link } from 'react-router';
 import { categories, site } from '../../config/site';
 import { whatsappLink } from '../../lib/whatsapp';
 import { Icon } from '../ui/Icon';
+import { Logo } from '../ui/Logo';
 import styles from './Footer.module.css';
 
+const consultingLinks = [
+  { to: '/#servicios', label: 'Servicios' },
+  { to: '/#metodo', label: 'Método de trabajo' },
+  { to: '/diagnostico', label: 'Diagnóstico' },
+  { to: '/diagnostico#medicion', label: 'Contrato y medición justa' },
+];
+
 const helpLinks = [
-  { to: '/#como-funciona', label: 'Cómo funciona' },
+  { to: '/#como-funciona', label: 'Cómo funciona la tienda' },
   { to: '/faq', label: 'Preguntas frecuentes' },
   { to: '/preparar-archivo', label: 'Cómo preparar tu archivo' },
   { to: '/tiempos-de-entrega', label: 'Tiempos de entrega' },
@@ -18,18 +26,31 @@ export function Footer() {
       <div className={`container ${styles.grid}`}>
         <div className={styles.brandCol}>
           <Link to="/" className={styles.logo}>
-            <span className={styles.mark} aria-hidden="true" />
-            {site.brand}
+            <Logo tone="dark" />
           </Link>
           <p className={styles.blurb}>
-            Impresos, gran formato, promocionales, identidad de marca y servicios digitales para
-            negocios que quieren que los vean.
+            Consultoría de crecimiento empresarial y optimización de rentabilidad, con agencia
+            integral de publicidad. Medimos, implementamos y cobramos sobre el valor que ayudamos a
+            generar.
           </p>
         </div>
 
+        <nav aria-labelledby="footer-consultoria">
+          <h2 id="footer-consultoria" className={styles.heading}>
+            Consultoría
+          </h2>
+          <ul role="list" className={styles.links}>
+            {consultingLinks.map((l) => (
+              <li key={l.to}>
+                <Link to={l.to}>{l.label}</Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
         <nav aria-labelledby="footer-productos">
           <h2 id="footer-productos" className={styles.heading}>
-            Productos
+            Tienda de publicidad
           </h2>
           <ul role="list" className={styles.links}>
             {categories.map((c) => (

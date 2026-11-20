@@ -3,7 +3,7 @@ import { site } from '../config/site';
 
 const DEFAULT_TITLE = `${site.brand} · ${site.tagline}`;
 const DEFAULT_DESCRIPTION =
-  'Imprenta y publicidad para negocios: tarjetas, flyers, lonas, promocionales, identidad de marca y servicios digitales. Cotiza en línea.';
+  'Consultoría de crecimiento comercial basada en resultados: diagnóstico, estrategia, marketing, tecnología y operación, con honorario ligado a la utilidad incremental. Tienda de publicidad en línea.';
 
 function setMeta(name: string, content: string, attr: 'name' | 'property' = 'name') {
   let el = document.head.querySelector<HTMLMetaElement>(`meta[${attr}="${name}"]`);

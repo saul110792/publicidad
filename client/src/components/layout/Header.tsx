@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink } from 'react-router';
-import { mainNav, site } from '../../config/site';
+import { mainNav } from '../../config/site';
 import { Button } from '../ui/Button';
 import { Icon } from '../ui/Icon';
+import { Logo } from '../ui/Logo';
 import { useCart } from '../../features/cart/cartStore';
 import styles from './Header.module.css';
 
@@ -24,8 +25,7 @@ export function Header() {
     <header className={styles.header}>
       <div className={`container ${styles.inner}`}>
         <Link to="/" className={styles.logo} onClick={close}>
-          <span className={styles.mark} aria-hidden="true" />
-          <span>{site.brand}</span>
+          <Logo />
         </Link>
 
         <nav
@@ -49,8 +49,8 @@ export function Header() {
             ))}
           </ul>
           <div className={styles.navCta}>
-            <Button to="/productos" block>
-              Cotizar ahora
+            <Button to="/diagnostico" block>
+              Solicitar diagnóstico
             </Button>
           </div>
         </nav>
@@ -69,8 +69,8 @@ export function Header() {
               </span>
             )}
           </Link>
-          <Button to="/productos" className={styles.cta}>
-            Cotizar ahora
+          <Button to="/diagnostico" className={styles.cta}>
+            Solicitar diagnóstico
           </Button>
           <button
             type="button"

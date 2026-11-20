@@ -19,6 +19,9 @@ export const OrderConfirmPage = lazy(() =>
 export const MockPaymentPage = lazy(() =>
   import('./MockPaymentPage').then((m) => ({ default: m.MockPaymentPage })),
 );
+export const DiagnosisPage = lazy(() =>
+  import('./DiagnosisPage').then((m) => ({ default: m.DiagnosisPage })),
+);
 export const FaqPage = lazy(() => import('./InfoPages').then((m) => ({ default: m.FaqPage })));
 export const PrepareFilePage = lazy(() =>
   import('./InfoPages').then((m) => ({ default: m.PrepareFilePage })),

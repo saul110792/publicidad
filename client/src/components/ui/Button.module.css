@@ -55,7 +55,7 @@
 }
 
 .dark:hover {
-  background: #2b2c32;
+  background: #2c3646;
 }
 
 .ghost-dark {
@@ -75,6 +75,16 @@
 
 .light:hover {
   background: var(--color-bg);
+}
+
+/* Dorado de la marca sobre azul marino; texto oscuro para contraste. */
+.gold {
+  background: var(--color-gold);
+  color: var(--color-ink);
+}
+
+.gold:hover {
+  background: var(--color-accent-on-dark);
 }
 
 /* Verde de WhatsApp con texto oscuro (el blanco sobre #25d366 no tiene contraste suficiente). */

@@ -1,21 +1,30 @@
 /* Tokens de diseño tomados de los bocetos. Todo componente usa estas variables. */
 :root {
   /* Color */
-  --color-ink: #16171b;
+  --color-ink: #1f2733;
   --color-bg: #f5f3ee;
   --color-surface: #fff;
   --color-border: #ddd9d0;
   --color-border-input: #c9c5bb;
-  --color-accent: #c8321f;
-  --color-accent-hover: #a12818;
-  --color-accent-soft: #f7e3de;
+  --color-accent: #8c6235;
+  --color-accent-hover: #74502a;
+  --color-accent-soft: #f3e8d9;
   --color-text: var(--color-ink);
-  --color-text-2: #4a4843;
-  --color-text-3: #5c5a55;
-  --color-accent-on-dark: #f0a898;
+  --color-text-2: #464b54;
+  --color-text-3: #575c66;
+  --color-accent-on-dark: #c99a63;
   --color-on-dark: #fff;
   --color-on-dark-muted: rgb(255 255 255 / 0.72);
   --color-dark-border: rgb(255 255 255 / 0.14);
+
+  /* Marca Ventas Medibles: dorado del logo (decorativo, no para texto sobre blanco)
+     y acentos secundarios del plan (pizarra, salvia, coral, arena). */
+  --color-gold: #b98a55;
+  --color-slate: #5b82a6;
+  --color-sage: #6f9f88;
+  --color-coral: #c9705f;
+  --color-sand: #dcb98e;
+  --color-ink-2: #2c3646;
   --color-success-bg: #e4f1e8;
   --color-success-text: #1e5e33;
 
@@ -71,10 +80,10 @@
   --header-h: 68px;
 
   /* Efectos */
-  --shadow-card: 0 1px 2px rgb(22 23 27 / 0.06), 0 4px 16px rgb(22 23 27 / 0.06);
-  --shadow-soft: 0 1px 2px rgb(22 23 27 / 0.05), 0 8px 24px -12px rgb(22 23 27 / 0.18);
-  --shadow-lift: 0 2px 4px rgb(22 23 27 / 0.06), 0 22px 40px -18px rgb(22 23 27 / 0.32);
+  --shadow-card: 0 1px 2px rgb(31 39 51 / 0.06), 0 4px 16px rgb(31 39 51 / 0.06);
+  --shadow-soft: 0 1px 2px rgb(31 39 51 / 0.05), 0 8px 24px -12px rgb(31 39 51 / 0.18);
+  --shadow-lift: 0 2px 4px rgb(31 39 51 / 0.06), 0 22px 40px -18px rgb(31 39 51 / 0.32);
   --surface-warm: linear-gradient(180deg, #fffdf9 0%, #fff 100%);
-  --focus-ring: 0 0 0 3px rgb(200 50 31 / 0.4);
+  --focus-ring: 0 0 0 3px rgb(185 138 85 / 0.5);
   --transition: 150ms ease;
 }
